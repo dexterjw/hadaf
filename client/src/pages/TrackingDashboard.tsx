@@ -3,12 +3,10 @@ import { StreakCard } from "@/components/hadaf/StreakCard";
 import { WeeklyHeatmap } from "@/components/hadaf/WeeklyHeatmap";
 import { VelocityGraph } from "@/components/hadaf/VelocityGraph";
 import { CumulativeGrowth } from "@/components/hadaf/CumulativeGrowth";
-import { LogSabak } from "@/components/hadaf/LogSabak";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Share2, LayoutDashboard, PenTool } from "lucide-react";
+import { ArrowLeft, Share2 } from "lucide-react";
 import { Link } from "wouter";
-import { subDays, format } from "date-fns";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { subDays } from "date-fns";
 
 // Mock Data Generators - Updated for new visual style
 const generateHeatmapData = () => {
@@ -98,51 +96,32 @@ export default function TrackingDashboard() {
             </div>
         </div>
 
-        <Tabs defaultValue="analytics" className="space-y-6">
-            <div className="flex items-center justify-between border-b pb-4">
-                <TabsList className="bg-muted/50">
-                    <TabsTrigger value="analytics" className="gap-2">
-                        <LayoutDashboard className="w-4 h-4" />
-                        Analytics
-                    </TabsTrigger>
-                    <TabsTrigger value="log" className="gap-2">
-                        <PenTool className="w-4 h-4" />
-                        Log Progress
-                    </TabsTrigger>
-                </TabsList>
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+            {/* Dashboard Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+            
+            {/* Top Row: Streak (4 cols) + Heatmap (8 cols) */}
+            <div className="md:col-span-4 h-[320px]">
+                <StreakCard 
+                    streak={streak} 
+                    reviewedToday={reviewedToday} 
+                    onToggleToday={handleToggleToday} 
+                />
+            </div>
+            <div className="md:col-span-8 h-[320px]">
+                <WeeklyHeatmap data={heatmapData} />
             </div>
 
-            <TabsContent value="analytics" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                {/* Dashboard Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                
-                {/* Top Row: Streak (4 cols) + Heatmap (8 cols) */}
-                <div className="md:col-span-4 h-[320px]">
-                    <StreakCard 
-                        streak={streak} 
-                        reviewedToday={reviewedToday} 
-                        onToggleToday={handleToggleToday} 
-                    />
-                </div>
-                <div className="md:col-span-8 h-[320px]">
-                    <WeeklyHeatmap data={heatmapData} />
-                </div>
+            {/* Bottom Row: Velocity (6 cols) + Growth (6 cols) */}
+            <div className="md:col-span-6 h-[320px]">
+                <VelocityGraph data={velocityData} />
+            </div>
+            <div className="md:col-span-6 h-[320px]">
+                <CumulativeGrowth data={growthData} />
+            </div>
 
-                {/* Bottom Row: Velocity (6 cols) + Growth (6 cols) */}
-                <div className="md:col-span-6 h-[320px]">
-                    <VelocityGraph data={velocityData} />
-                </div>
-                <div className="md:col-span-6 h-[320px]">
-                    <CumulativeGrowth data={growthData} />
-                </div>
-
-                </div>
-            </TabsContent>
-
-            <TabsContent value="log" className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-                <LogSabak />
-            </TabsContent>
-        </Tabs>
+            </div>
+        </div>
       </div>
     </div>
   );

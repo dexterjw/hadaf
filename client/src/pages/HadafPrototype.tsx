@@ -12,7 +12,7 @@ import { ProgressSurplusChart } from "@/components/hadaf/ProgressSurplusChart";
 import { JourneyMap } from "@/components/hadaf/JourneyMap";
 
 import { Link } from "wouter";
-import { BarChart3 } from "lucide-react";
+import { BarChart3, PenTool } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function HadafPrototype() {
@@ -54,7 +54,13 @@ export default function HadafPrototype() {
       </div>
 
       {/* Dashboard Link */}
-      <div className="absolute top-4 right-4 z-50">
+      <div className="absolute top-4 right-4 z-50 flex gap-2">
+        <Link href="/log">
+          <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
+            <PenTool className="w-4 h-4" />
+            Log Progress
+          </Button>
+        </Link>
         <Link href="/dashboard">
           <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
             <BarChart3 className="w-4 h-4" />

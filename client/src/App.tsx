@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import HadafPrototype from "@/pages/HadafPrototype";
 import TrackingDashboard from "@/pages/TrackingDashboard";
+import LogProgressPage from "@/pages/LogProgressPage";
 
 function Router() {
   return (
@@ -13,6 +14,7 @@ function Router() {
       {/* Default route points to our prototype */}
       <Route path="/" component={HadafPrototype} />
       <Route path="/dashboard" component={TrackingDashboard} />
+      <Route path="/log" component={LogProgressPage} />
       <Route component={NotFound} />
     </Switch>
   );
