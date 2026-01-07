@@ -8,6 +8,7 @@ import { RealityPanel } from "@/components/hadaf/RealityPanel";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { ProgressDeficitChart } from "@/components/hadaf/ProgressDeficitChart";
+import { ProgressSurplusChart } from "@/components/hadaf/ProgressSurplusChart";
 import { JourneyMap } from "@/components/hadaf/JourneyMap";
 
 export default function HadafPrototype() {
@@ -101,6 +102,15 @@ export default function HadafPrototype() {
                   transition={{ delay: 0.2 }}
                 >
                   <ProgressDeficitChart />
+                </motion.div>
+
+                {/* Progress Surplus Chart (Demo) */}
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <ProgressSurplusChart />
                 </motion.div>
               </motion.div>
             ) : (
