@@ -38,7 +38,7 @@ export function FinishDateHero({ date, status }: FinishDateHeroProps) {
               mass: status === "slip" ? 2 : 1, // Heavier mass for slips
             }}
             className={cn(
-              "font-display text-6xl md:text-9xl font-bold tracking-tighter tabular-nums",
+              "font-display text-5xl sm:text-6xl md:text-8xl font-bold tracking-tighter tabular-nums whitespace-nowrap text-center w-full px-4",
               colorMap[status],
               status === "slip" && "text-shadow-glow" // visual emphasis on slip
             )}

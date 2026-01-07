@@ -8,6 +8,7 @@ import { RealityPanel } from "@/components/hadaf/RealityPanel";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { ProgressDeficitChart } from "@/components/hadaf/ProgressDeficitChart";
+import { JourneyMap } from "@/components/hadaf/JourneyMap";
 
 export default function HadafPrototype() {
   const [mode, setMode] = useState<"timeline" | "habit">("timeline");
@@ -87,9 +88,13 @@ export default function HadafPrototype() {
                     No negotiation.
                   </p>
                 </div>
+
+                {/* NEW: Journey Map (Marhala View) */}
+                <JourneyMap currentJuz={4} />
+
                 <RealityPanel onToggle={handleRealityToggle} />
                 
-                {/* NEW: Progress Deficit Chart */}
+                {/* Progress Deficit Chart */}
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
