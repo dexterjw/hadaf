@@ -7,6 +7,8 @@ import { DailyActionCard } from "@/components/hadaf/DailyActionCard";
 import { RealityPanel } from "@/components/hadaf/RealityPanel";
 import { motion, AnimatePresence } from "framer-motion";
 
+import { ProgressDeficitChart } from "@/components/hadaf/ProgressDeficitChart";
+
 export default function HadafPrototype() {
   const [mode, setMode] = useState<"timeline" | "habit">("timeline");
   const [finishDate, setFinishDate] = useState(addDays(new Date(), 180)); // ~6 months out
@@ -86,6 +88,15 @@ export default function HadafPrototype() {
                   </p>
                 </div>
                 <RealityPanel onToggle={handleRealityToggle} />
+                
+                {/* NEW: Progress Deficit Chart */}
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <ProgressDeficitChart />
+                </motion.div>
               </motion.div>
             ) : (
               <motion.div
