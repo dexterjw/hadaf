@@ -44,11 +44,21 @@ export function StreakCard({ streak, reviewedToday, onToggleToday }: StreakCardP
             </>
           )}
         </Button>
-        <p className="text-xs text-muted-foreground mt-4 text-center">
-          {reviewedToday 
-            ? "Great job! Keep the momentum going." 
-            : "Review today to keep your streak alive!"}
-        </p>
+        <div className="w-full space-y-2 mt-6">
+            <div className="flex justify-between text-xs text-muted-foreground">
+                <span>Current Goal</span>
+                <span>30 Days</span>
+            </div>
+            <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
+                <div 
+                    className="h-full bg-primary transition-all duration-500" 
+                    style={{ width: `${Math.min((streak / 30) * 100, 100)}%` }} 
+                />
+            </div>
+            <p className="text-xs text-muted-foreground text-center pt-1">
+                {30 - streak > 0 ? `${30 - streak} days to your next milestone!` : "Milestone reached!"}
+            </p>
+        </div>
       </CardContent>
     </Card>
   );

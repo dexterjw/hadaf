@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { Crown } from "lucide-react";
 
 const chartConfig = {
   cumulative: {
@@ -17,6 +18,24 @@ interface CumulativeGrowthProps {
   }[];
 }
 
+const CustomDot = (props: any) => {
+    const { cx, cy, payload } = props;
+    if (!payload.milestone) return null;
+    return (
+        <g transform={`translate(${cx},${cy})`}>
+            <circle r={4} fill="var(--color-cumulative)" stroke="white" strokeWidth={2} />
+            <foreignObject x={-100} y={-45} width={200} height={40}>
+                <div className="flex flex-col items-center justify-center text-center">
+                    <span className="text-[10px] bg-background border px-2 py-0.5 rounded-full shadow-sm whitespace-nowrap flex items-center gap-1">
+                        <Crown className="w-3 h-3 text-yellow-500" />
+                        {payload.milestone}
+                    </span>
+                </div>
+            </foreignObject>
+        </g>
+    );
+};
+
 export function CumulativeGrowth({ data }: CumulativeGrowthProps) {
   return (
     <Card className="h-full border-muted/40 shadow-sm hover:shadow-md transition-shadow">
@@ -32,7 +51,7 @@ export function CumulativeGrowth({ data }: CumulativeGrowthProps) {
             margin={{
               left: 0,
               right: 0,
-              top: 10,
+              top: 20, 
               bottom: 0,
             }}
           >
@@ -69,6 +88,7 @@ export function CumulativeGrowth({ data }: CumulativeGrowthProps) {
               fillOpacity={0.4}
               stroke="var(--color-cumulative)"
               strokeWidth={2}
+              dot={<CustomDot />}
             />
           </AreaChart>
         </ChartContainer>

@@ -36,10 +36,13 @@ const generateVelocityData = () => {
 
 const generateGrowthData = () => {
   return [
-    { date: "Oct", cumulative: 120 },
-    { date: "Nov", cumulative: 340 },
-    { date: "Dec", cumulative: 580 },
-    { date: "Jan", cumulative: 750 },
+    { date: "Oct 1", cumulative: 120 },
+    { date: "Oct 15", cumulative: 200, milestone: "Juz 29" },
+    { date: "Nov 1", cumulative: 340 },
+    { date: "Nov 15", cumulative: 450 },
+    { date: "Dec 1", cumulative: 580, milestone: "Surah Yasin" },
+    { date: "Dec 15", cumulative: 650 },
+    { date: "Jan 1", cumulative: 750 },
   ];
 };
 
