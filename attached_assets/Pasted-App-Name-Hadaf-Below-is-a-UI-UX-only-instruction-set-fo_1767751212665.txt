@@ -1,0 +1,328 @@
+App Name: Hadaf
+
+Below is a **UI/UX-only instruction set** for an AI design agent.  
+All logic is assumed to exist; your job is **interface, interaction, and behavioral impact**.
+
+---
+
+# **AI UI/UX DESIGN INSTRUCTIONS**
+
+**Project:** Project Hadaf – Hifdh Calculator  
+**Scope:** UI, UX, interaction design, visual feedback, behavioral framing  
+**Explicit Exclusions:** No backend logic, no math formulas, no data modeling
+
+---
+
+## **1. UX North Star**
+
+Design an interface that **removes negotiation** and **forces cognitive ownership** by making time consequences visible, immediate, and emotionally weighted.
+
+If a student misses a day, they should _feel_ it in the UI.
+
+---
+
+## **2. Universal UI Principles (Apply Everywhere)**
+
+### **A. Cause → Effect Must Be Immediate**
+
+- Every user action must produce **visible change within 300ms**
+    
+- No silent recalculation
+    
+- No hidden state
+    
+
+### **B. Dates Are the Primary Currency**
+
+- Dates must be:
+    
+    - Large
+        
+    - Central
+        
+    - Animated when they change
+        
+- Numbers like “lines/day” are secondary
+    
+
+### **C. Asymmetry of Feedback**
+
+- Negative feedback (missed target):
+    
+    - Larger motion
+        
+    - Slower easing
+        
+    - Stronger contrast
+        
+- Positive feedback:
+    
+    - Subtle
+        
+    - Encouraging, not euphoric
+        
+
+---
+
+## **3. Variation 1 — Timeline-Centric / Goal Ownership UI**
+
+### **Primary UX Goal**
+
+Make the finish date feel like a _chosen commitment_, not a suggestion.
+
+---
+
+### **Layout Hierarchy**
+
+1. **Hero Finish Date (Top, Fixed)**
+    
+    - Largest text on screen
+        
+    - Label: “Projected Khatam”
+        
+    - Color shifts based on feasibility
+        
+    - Always visible on scroll
+        
+2. **Timeline Visualization (Middle)**
+    
+    - Horizontal, left → right
+        
+    - Anchors:
+        
+        - Start
+            
+        - Today
+            
+        - Finish
+            
+    - Timeline stretches/contracts on interaction
+        
+3. **Control Inputs (Bottom)**
+    
+    - Sliders, toggles, date picker
+        
+    - Never compete visually with the finish date
+        
+
+---
+
+### **Mode Switching UX**
+
+- Use a **segmented control**
+    
+- Only one mode visible at a time
+    
+- Transition animation must:
+    
+    - Fade numbers
+        
+    - Keep date visible (reinforces ownership)
+        
+
+---
+
+### **Slip UX (Critical)**
+
+When a missed day is logged:
+
+- Timeline pulls right with resistance
+    
+- Finish date:
+    
+    - Physically moves
+        
+    - Momentarily enlarges
+        
+- Micro-copy:
+    
+    > “Recovery required. Finish date moved.”
+    
+
+This interaction must feel **heavier** than any positive interaction.
+
+---
+
+### **Reality Toggles UX**
+
+- Collapsible “Reality Check” panel
+    
+- Each toggle:
+    
+    - Instantly stretches the timeline
+        
+    - Shows delta (e.g. “+2 months”)
+        
+- Avoid checklists that feel optional or ignorable
+    
+
+---
+
+### **Anti-Patterns to Avoid**
+
+- Static charts
+    
+- Hidden consequences
+    
+- Tooltips as primary explanation
+    
+- Allowing unrealistic plans without visual warning
+    
+
+---
+
+## **4. Variation 2 — Daily Accountability / Habit UI**
+
+### **Primary UX Goal**
+
+Make _today_ feel like the lever that moves the entire future.
+
+---
+
+### **Layout Hierarchy**
+
+1. **Daily Action Card (Top)**
+    
+    - One-tap state selection:
+        
+        - Hit
+            
+        - Partial
+            
+        - Missed
+            
+    - Must be thumb-reachable on mobile
+        
+2. **Today’s Work Block**
+    
+    - Today’s sabaq
+        
+    - Today’s manzil (time-based)
+        
+    - Visual progress indicator supports partials
+        
+3. **Finish Date Tracker (Persistent)**
+    
+    - Smaller than Variation 1
+        
+    - Still animated on change
+        
+    - Acts as a scoreboard
+        
+
+---
+
+### **Feedback UX Rules**
+
+- **Hit Target**
+    
+    - Finish date slides slightly left
+        
+    - Soft color pulse
+        
+    - Short affirmation text
+        
+- **Missed Target**
+    
+    - Finish date jumps right
+        
+    - Stronger motion + easing
+        
+    - Message explains _why_, not _that_
+        
+
+---
+
+### **Weekly View UX**
+
+- Calendar-style strip
+    
+- Rest days visually distinct
+    
+- Dragging rest days:
+    
+    - Immediately updates finish date
+        
+    - Shows cumulative impact
+        
+
+---
+
+### **Manzil UX**
+
+- Always visible
+    
+- Expressed as **time**, not abstract units
+    
+- Cannot be hidden or disabled
+    
+
+---
+
+## **5. Visual Language Guidelines**
+
+- Use motion to explain consequences
+    
+- Prefer spatial changes over numeric deltas
+    
+- Avoid “productivity app” aesthetics
+    
+- Tone: serious, calm, inevitable
+    
+
+---
+
+## **6. Accessibility & Clarity**
+
+- Color never the sole indicator
+    
+- Motion must be paired with text
+    
+- All date changes must be readable post-animation
+    
+
+---
+
+## **7. Success Metrics (UX-Only)**
+
+The UI succeeds if:
+
+- A missed day feels costly without shame
+    
+- Students stop asking for reductions
+    
+- The finish date becomes the reference point in conversation
+    
+- The interface feels like a mirror, not a judge
+    
+
+---
+
+## **8. Deliverables Expected From the AI Agent**
+
+- High-fidelity screen designs for both variations
+    
+- Motion/interaction descriptions for:
+    
+    - Slips
+        
+    - Progress
+        
+    - Reality toggles
+        
+- Clear hierarchy rationale for each screen
+    
+- UX justification tied to behavior change (not aesthetics)
+    
+
+---
+
+If you want next:
+
+- **Figma-ready frame breakdown**
+    
+- **Microcopy system**
+    
+- **Motion specs (timing, easing, hierarchy)**
+    
+- **Mobile-first vs desktop tradeoffs**
