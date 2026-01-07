@@ -78,6 +78,10 @@
   --border: 220 10% 20%;
   --input: 220 10% 20%;
   --ring: 220 10% 40%;
+
+  /* Chart Colors */
+  --color-verses: 160 60% 45%;
+  --color-cumulative: 210 80% 60%;
 }
 
 @layer base {

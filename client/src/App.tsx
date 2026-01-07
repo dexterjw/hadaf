@@ -5,12 +5,14 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import HadafPrototype from "@/pages/HadafPrototype";
+import TrackingDashboard from "@/pages/TrackingDashboard";
 
 function Router() {
   return (
     <Switch>
       {/* Default route points to our prototype */}
       <Route path="/" component={HadafPrototype} />
+      <Route path="/dashboard" component={TrackingDashboard} />
       <Route component={NotFound} />
     </Switch>
   );

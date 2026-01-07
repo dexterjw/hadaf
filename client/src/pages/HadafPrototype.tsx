@@ -11,6 +11,10 @@ import { ProgressDeficitChart } from "@/components/hadaf/ProgressDeficitChart";
 import { ProgressSurplusChart } from "@/components/hadaf/ProgressSurplusChart";
 import { JourneyMap } from "@/components/hadaf/JourneyMap";
 
+import { Link } from "wouter";
+import { BarChart3 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
 export default function HadafPrototype() {
   const [mode, setMode] = useState<"timeline" | "habit">("timeline");
   const [finishDate, setFinishDate] = useState(addDays(new Date(), 180)); // ~6 months out
@@ -47,6 +51,16 @@ export default function HadafPrototype() {
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px]" />
         <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-accent/5 rounded-full blur-[120px]" />
+      </div>
+
+      {/* Dashboard Link */}
+      <div className="absolute top-4 right-4 z-50">
+        <Link href="/dashboard">
+          <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
+            <BarChart3 className="w-4 h-4" />
+            Analytics
+          </Button>
+        </Link>
       </div>
 
       <div className="w-full max-w-2xl mx-auto z-10 flex flex-col h-full">
