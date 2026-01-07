@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Area, AreaChart, CartesianGrid, LabelList, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Crown } from "lucide-react";
 
@@ -20,16 +20,23 @@ interface CumulativeGrowthProps {
 
 const CustomDot = (props: any) => {
     const { cx, cy, payload } = props;
-    if (!payload.milestone) return null;
+    if (!payload.milestone) return <circle cx={cx} cy={cy} r={0} />;
+    
     return (
-        <g transform={`translate(${cx},${cy})`}>
-            <circle r={4} fill="var(--color-cumulative)" stroke="white" strokeWidth={2} />
-            <foreignObject x={-100} y={-45} width={200} height={40}>
-                <div className="flex flex-col items-center justify-center text-center">
-                    <span className="text-[10px] bg-background border px-2 py-0.5 rounded-full shadow-sm whitespace-nowrap flex items-center gap-1">
-                        <Crown className="w-3 h-3 text-yellow-500" />
+        <g transform={`translate(${cx},${cy})`} className="group cursor-pointer">
+            {/* Pulsing effect behind */}
+            <circle r={6} fill="var(--color-cumulative)" opacity={0.3} className="animate-pulse" />
+            <circle r={3.5} fill="var(--color-cumulative)" stroke="white" strokeWidth={1.5} />
+            
+            {/* Milestone Label */}
+            <foreignObject x={-60} y={-45} width={120} height={40} className="overflow-visible pointer-events-none">
+                <div className="flex flex-col items-center justify-center text-center transition-transform hover:scale-110">
+                    <span className="text-[10px] font-bold bg-background/90 backdrop-blur-sm border border-border/50 px-2 py-1 rounded-md shadow-sm whitespace-nowrap flex items-center gap-1.5 text-foreground">
+                        <Crown className="w-3 h-3 text-amber-500 fill-amber-500/20" />
                         {payload.milestone}
                     </span>
+                    {/* Little triangle arrow pointing down */}
+                    <div className="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[4px] border-t-border/50 mt-[-1px]"></div>
                 </div>
             </foreignObject>
         </g>
@@ -38,57 +45,60 @@ const CustomDot = (props: any) => {
 
 export function CumulativeGrowth({ data }: CumulativeGrowthProps) {
   return (
-    <Card className="h-full border-muted/40 shadow-sm hover:shadow-md transition-shadow">
-      <CardHeader>
-        <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+    <Card className="h-full border-muted/40 shadow-sm flex flex-col">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
           Quarterly Growth
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="h-[200px] w-full">
+      <CardContent className="flex-1 min-h-0 pb-2">
+        <ChartContainer config={chartConfig} className="h-full w-full max-h-[220px]">
           <AreaChart
             data={data}
             margin={{
               left: 0,
-              right: 0,
-              top: 20, 
+              right: 10,
+              top: 25, 
               bottom: 0,
             }}
           >
             <defs>
               <linearGradient id="fillCumulative" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="var(--color-cumulative)" stopOpacity={0.3} />
+                <stop offset="5%" stopColor="var(--color-cumulative)" stopOpacity={0.4} />
                 <stop offset="95%" stopColor="var(--color-cumulative)" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-muted/30" />
+            <CartesianGrid vertical={false} strokeDasharray="3 3" className="stroke-muted/20" />
             <XAxis
               dataKey="date"
               tickLine={false}
               axisLine={false}
-              tickMargin={8}
-              minTickGap={32}
-              className="text-xs text-muted-foreground"
+              tickMargin={12}
+              minTickGap={30}
+              className="text-[10px] font-medium text-muted-foreground"
+              dy={10}
             />
              <YAxis
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
-                className="text-xs text-muted-foreground"
+                className="text-[10px] font-medium text-muted-foreground"
                 width={30}
+                tickCount={5}
              />
             <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="line" />}
+              cursor={{ stroke: "var(--muted-foreground)", strokeWidth: 1, strokeDasharray: "4 4" }}
+              content={<ChartTooltipContent indicator="line" className="w-40" />}
             />
             <Area
               dataKey="cumulative"
-              type="natural"
+              type="monotone"
               fill="url(#fillCumulative)"
-              fillOpacity={0.4}
+              fillOpacity={1}
               stroke="var(--color-cumulative)"
-              strokeWidth={2}
+              strokeWidth={2.5}
               dot={<CustomDot />}
+              activeDot={{ r: 4, strokeWidth: 0, fill: "var(--color-cumulative)" }}
             />
           </AreaChart>
         </ChartContainer>

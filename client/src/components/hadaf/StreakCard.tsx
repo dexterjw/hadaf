@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { CheckCircle2, Circle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CheckCircle2, Flame, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -10,54 +10,73 @@ interface StreakCardProps {
 }
 
 export function StreakCard({ streak, reviewedToday, onToggleToday }: StreakCardProps) {
+  // Calculate milestone progress
+  const nextMilestone = 30; // Could be dynamic: 7, 30, 60, 90...
+  const progress = Math.min((streak / nextMilestone) * 100, 100);
+  const daysLeft = Math.max(0, nextMilestone - streak);
+
   return (
-    <Card className="h-full border-muted/40 shadow-sm hover:shadow-md transition-shadow">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-          Daily Streak
+    <Card className="h-full border-muted/40 shadow-sm relative overflow-hidden group">
+      {/* Background decoration */}
+      <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none">
+        <Flame className="w-32 h-32" />
+      </div>
+
+      <CardHeader className="pb-2 relative z-10">
+        <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+          <Flame className="w-4 h-4 text-orange-500" />
+          Current Streak
         </CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col items-center justify-center pt-2">
-        <div className="text-6xl font-bold tracking-tighter mb-4 text-primary">
-          {streak}
-          <span className="text-lg font-normal text-muted-foreground ml-2">days</span>
+      
+      <CardContent className="relative z-10 flex flex-col justify-between h-[calc(100%-60px)]">
+        <div className="mt-2">
+           <div className="flex items-baseline gap-2">
+             <span className="text-5xl font-bold tracking-tighter text-foreground">{streak}</span>
+             <span className="text-lg text-muted-foreground font-medium">days</span>
+           </div>
+           <p className="text-sm text-muted-foreground mt-1">
+             {reviewedToday ? "Great consistency!" : "Keep the chain going."}
+           </p>
         </div>
-        
-        <Button
-          variant={reviewedToday ? "default" : "outline"}
-          size="lg"
-          className={cn(
-            "w-full max-w-[200px] h-12 text-base gap-2 transition-all duration-300",
-            reviewedToday && "bg-green-600 hover:bg-green-700 text-white border-transparent"
-          )}
-          onClick={onToggleToday}
-        >
-          {reviewedToday ? (
-            <>
-              <CheckCircle2 className="w-5 h-5" />
-              Completed
-            </>
-          ) : (
-            <>
-              <Circle className="w-5 h-5" />
-              Mark Complete
-            </>
-          )}
-        </Button>
-        <div className="w-full space-y-2 mt-6">
-            <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Current Goal</span>
-                <span>30 Days</span>
+
+        <div className="space-y-6 mt-6">
+            <Button
+                variant={reviewedToday ? "outline" : "default"}
+                size="lg"
+                className={cn(
+                    "w-full h-11 text-sm font-medium transition-all duration-300 shadow-sm",
+                    reviewedToday 
+                        ? "bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 hover:text-emerald-600 border-emerald-500/20" 
+                        : "bg-primary hover:bg-primary/90"
+                )}
+                onClick={onToggleToday}
+            >
+                {reviewedToday ? (
+                    <>
+                    <CheckCircle2 className="w-4 h-4 mr-2" />
+                    Complete
+                    </>
+                ) : (
+                    "Mark Today Complete"
+                )}
+            </Button>
+
+            <div className="space-y-2">
+                <div className="flex justify-between text-[11px] font-medium text-muted-foreground">
+                    <span className="flex items-center gap-1.5">
+                        <Trophy className="w-3 h-3 text-yellow-500" />
+                        Next Milestone
+                    </span>
+                    <span>{daysLeft > 0 ? `${daysLeft} days left` : "Achieved!"}</span>
+                </div>
+                <div className="h-1.5 w-full bg-secondary/50 rounded-full overflow-hidden">
+                    <div 
+                        className="h-full bg-gradient-to-r from-orange-400 to-red-500 transition-all duration-700 ease-out" 
+                        style={{ width: `${progress}%` }} 
+                    />
+                </div>
             </div>
-            <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
-                <div 
-                    className="h-full bg-primary transition-all duration-500" 
-                    style={{ width: `${Math.min((streak / 30) * 100, 100)}%` }} 
-                />
-            </div>
-            <p className="text-xs text-muted-foreground text-center pt-1">
-                {30 - streak > 0 ? `${30 - streak} days to your next milestone!` : "Milestone reached!"}
-            </p>
         </div>
       </CardContent>
     </Card>
