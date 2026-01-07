@@ -3,10 +3,12 @@ import { StreakCard } from "@/components/hadaf/StreakCard";
 import { WeeklyHeatmap } from "@/components/hadaf/WeeklyHeatmap";
 import { VelocityGraph } from "@/components/hadaf/VelocityGraph";
 import { CumulativeGrowth } from "@/components/hadaf/CumulativeGrowth";
+import { LogSabak } from "@/components/hadaf/LogSabak";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Share2 } from "lucide-react";
+import { ArrowLeft, Share2, LayoutDashboard, PenTool } from "lucide-react";
 import { Link } from "wouter";
 import { subDays, format } from "date-fns";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Mock Data Generators - Updated for new visual style
 const generateHeatmapData = () => {
@@ -72,7 +74,7 @@ export default function TrackingDashboard() {
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
-      <div className="max-w-6xl mx-auto space-y-8">
+      <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
@@ -82,8 +84,8 @@ export default function TrackingDashboard() {
                     </Button>
                 </Link>
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-foreground">Analytics</h1>
-                    <p className="text-muted-foreground">Detailed insights into your memorization.</p>
+                    <h1 className="text-3xl font-bold tracking-tight text-foreground">My Journey</h1>
+                    <p className="text-muted-foreground">Track your progress and log new achievements.</p>
                 </div>
             </div>
             <div className="flex items-center gap-3">
@@ -96,30 +98,51 @@ export default function TrackingDashboard() {
             </div>
         </div>
 
-        {/* Dashboard Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-          
-          {/* Top Row: Streak (4 cols) + Heatmap (8 cols) */}
-          <div className="md:col-span-4 h-[320px]">
-            <StreakCard 
-                streak={streak} 
-                reviewedToday={reviewedToday} 
-                onToggleToday={handleToggleToday} 
-            />
-          </div>
-          <div className="md:col-span-8 h-[320px]">
-            <WeeklyHeatmap data={heatmapData} />
-          </div>
+        <Tabs defaultValue="analytics" className="space-y-6">
+            <div className="flex items-center justify-between border-b pb-4">
+                <TabsList className="bg-muted/50">
+                    <TabsTrigger value="analytics" className="gap-2">
+                        <LayoutDashboard className="w-4 h-4" />
+                        Analytics
+                    </TabsTrigger>
+                    <TabsTrigger value="log" className="gap-2">
+                        <PenTool className="w-4 h-4" />
+                        Log Progress
+                    </TabsTrigger>
+                </TabsList>
+            </div>
 
-          {/* Bottom Row: Velocity (6 cols) + Growth (6 cols) */}
-          <div className="md:col-span-6 h-[320px]">
-             <VelocityGraph data={velocityData} />
-          </div>
-          <div className="md:col-span-6 h-[320px]">
-             <CumulativeGrowth data={growthData} />
-          </div>
+            <TabsContent value="analytics" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                {/* Dashboard Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+                
+                {/* Top Row: Streak (4 cols) + Heatmap (8 cols) */}
+                <div className="md:col-span-4 h-[320px]">
+                    <StreakCard 
+                        streak={streak} 
+                        reviewedToday={reviewedToday} 
+                        onToggleToday={handleToggleToday} 
+                    />
+                </div>
+                <div className="md:col-span-8 h-[320px]">
+                    <WeeklyHeatmap data={heatmapData} />
+                </div>
 
-        </div>
+                {/* Bottom Row: Velocity (6 cols) + Growth (6 cols) */}
+                <div className="md:col-span-6 h-[320px]">
+                    <VelocityGraph data={velocityData} />
+                </div>
+                <div className="md:col-span-6 h-[320px]">
+                    <CumulativeGrowth data={growthData} />
+                </div>
+
+                </div>
+            </TabsContent>
+
+            <TabsContent value="log" className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+                <LogSabak />
+            </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
