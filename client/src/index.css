@@ -11,87 +11,109 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  
+
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
-  
+
   --color-card: hsl(var(--card));
   --color-card-foreground: hsl(var(--card-foreground));
-  
+
   --color-popover: hsl(var(--popover));
   --color-popover-foreground: hsl(var(--popover-foreground));
-  
+
   --color-primary: hsl(var(--primary));
   --color-primary-foreground: hsl(var(--primary-foreground));
-  
+
   --color-secondary: hsl(var(--secondary));
   --color-secondary-foreground: hsl(var(--secondary-foreground));
-  
+
   --color-muted: hsl(var(--muted));
   --color-muted-foreground: hsl(var(--muted-foreground));
-  
+
   --color-accent: hsl(var(--accent));
   --color-accent-foreground: hsl(var(--accent-foreground));
-  
+
   --color-destructive: hsl(var(--destructive));
   --color-destructive-foreground: hsl(var(--destructive-foreground));
-  
+
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
 }
 
 /* Serious, Calm, Inevitable Theme (Dark Mode Default) */
+/* Modern Minimalist "Trading Space" Theme */
 :root {
   --radius: 0.5rem;
-  
-  /* Deep Slate / Charcoal base */
-  --background: 220 15% 10%; 
-  --foreground: 220 10% 95%;
 
-  --card: 220 15% 14%;
-  --card-foreground: 220 10% 95%;
-  
-  --popover: 220 15% 10%;
-  --popover-foreground: 220 10% 95%;
-  
-  /* Primary Action - Neutral but strong */
-  --primary: 220 10% 95%;
-  --primary-foreground: 220 15% 10%;
-  
+  /* Pure Neutral Dark Base (Approx #0a0a0a) */
+  --background: 0 0% 4%;
+  --foreground: 0 0% 98%;
+
+  /* Subtle Card/Surface (Approx #121212) */
+  --card: 0 0% 7%;
+  --card-foreground: 0 0% 98%;
+
+  --popover: 0 0% 4%;
+  --popover-foreground: 0 0% 98%;
+
+  /* Primary Action - White */
+  --primary: 0 0% 98%;
+  --primary-foreground: 0 0% 9%;
+
   /* Secondary - Subtle interaction */
-  --secondary: 220 15% 20%;
-  --secondary-foreground: 220 10% 90%;
-  
-  /* Muted - For non-essential info */
-  --muted: 220 10% 25%;
-  --muted-foreground: 220 10% 60%;
-  
-  /* Accent - Used for "Hit/Progress" (Calm Sage/Teal) */
-  --accent: 160 30% 25%;
-  --accent-foreground: 160 40% 95%;
-  
-  /* Destructive/Slip - Used for "Miss/Slip" (Burnt Orange/Clay - not bright red) */
-  --destructive: 15 50% 30%;
-  --destructive-foreground: 15 60% 95%;
+  --secondary: 0 0% 12%;
+  --secondary-foreground: 0 0% 98%;
 
-  --border: 220 10% 20%;
-  --input: 220 10% 20%;
-  --ring: 220 10% 40%;
+  /* Muted - For non-essential info */
+  --muted: 0 0% 12%;
+  --muted-foreground: 0 0% 50%;
+
+  /* Accent - Vibrant Orange from reference */
+  --accent: 25 95% 55%;
+  --accent-foreground: 0 0% 100%;
+
+  /* Destructive */
+  --destructive: 0 62% 30%;
+  --destructive-foreground: 0 0% 98%;
+
+  /* Borders - Very subtle */
+  --border: 0 0% 12%;
+  --input: 0 0% 12%;
+  --ring: 25 95% 55%;
 
   /* Chart Colors */
-  --color-verses: 160 60% 45%;
-  --color-cumulative: 210 80% 60%;
+  --color-verses: 25 95% 55%;
+  --color-cumulative: 0 0% 100%;
 }
 
 @layer base {
   * {
     @apply border-border;
   }
+
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-sans antialiased text-foreground;
+    background-color: hsl(var(--background));
+    /* Subtle radial gradient: glowing top center, fading to dark */
+    background-image: radial-gradient(circle at 50% 0%, hsl(0 0% 9%) 0%, hsl(var(--background)) 70%);
+    background-attachment: fixed;
+    /* Ensures gradient stays while scrolling */
   }
-  h1, h2, h3, h4, h5, h6, .font-display {
+
+  /* Components with subtle depth */
+  .bg-card {
+    background: linear-gradient(145deg, hsl(var(--card)), hsl(0 0% 5%));
+    border: 1px solid hsl(var(--border) / 0.5);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  .font-display {
     font-family: var(--font-display);
   }
 }
@@ -99,11 +121,13 @@
 /* Custom Animation Utils */
 @layer utilities {
   .text-shadow-sm {
-    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   }
+
   .text-shadow-glow {
     text-shadow: 0 0 20px currentColor;
   }
+
   .bg-dots-dark {
     background-image: radial-gradient(hsl(220 10% 25%) 1px, transparent 1px);
     background-size: 24px 24px;
@@ -114,14 +138,16 @@
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: hsl(220 10% 25%);
   border-radius: 10px;
 }
+
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: hsl(220 10% 35%);
 }
-

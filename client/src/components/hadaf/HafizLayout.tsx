@@ -5,6 +5,22 @@ import HafizAnalytics from './HafizAnalytics';
 import HafizSettings from './HafizSettings';
 import HafizAICoach from './HafizAICoach';
 import { UserSettings, CompletionData, HafizTab, DEFAULT_SETTINGS } from '@/types/hafiz';
+import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbList,
+    BreadcrumbPage,
+} from '@/components/ui/breadcrumb';
+
+const tabTitles: Record<HafizTab, { title: string; subtitle: string }> = {
+    dashboard: { title: 'Dashboard', subtitle: "Let's continue your blessed journey." },
+    analytics: { title: 'Journey Analytics', subtitle: 'Visualize your progress and future milestones.' },
+    settings: { title: 'Configuration', subtitle: 'Adjust your plan and personal details.' },
+    coach: { title: 'AI Hifz Companion', subtitle: 'Ask for motivation, tafsir, or memorization tips.' },
+};
 
 export default function HafizLayout() {
     const [activeTab, setActiveTab] = useState<HafizTab>('dashboard');
@@ -34,55 +50,75 @@ export default function HafizLayout() {
         };
     }, [settings]);
 
+    const currentTab = tabTitles[activeTab];
+
     return (
-        <div className="flex h-screen w-full bg-background bg-dots-dark text-foreground font-sans overflow-hidden">
-            {/* Sidebar Navigation */}
-            <HafizSidebar activeTab={activeTab} setActiveTab={setActiveTab} userName={settings.name} />
+        <SidebarProvider defaultOpen={true}>
+            <div className="flex h-screen w-full bg-background text-foreground font-sans overflow-hidden">
+                {/* Sidebar Navigation */}
+                <HafizSidebar activeTab={activeTab} setActiveTab={setActiveTab} userName={settings.name} />
 
-            {/* Main Content Area */}
-            <main className="flex-1 h-full overflow-y-auto p-4 md:p-8 transition-all duration-300 ease-in-out">
-                <div className="max-w-7xl mx-auto h-full flex flex-col">
+                {/* Main Content Area */}
+                <SidebarInset className="flex-1 h-full overflow-y-auto transition-all duration-300 ease-in-out bg-background">
+                    <div className="max-w-7xl mx-auto h-full flex flex-col p-6 md:p-12 lg:p-16">
 
-                    {/* Header */}
-                    <header className="mb-6 flex items-center justify-between pt-2">
-                        <div>
-                            <h1 className="text-2xl font-bold text-foreground tracking-tight font-display">
-                                {activeTab === 'dashboard' && `Salam, ${settings.name}`}
-                                {activeTab === 'analytics' && 'Journey Analytics'}
-                                {activeTab === 'settings' && 'Configuration'}
-                                {activeTab === 'coach' && 'AI Hifz Companion'}
-                            </h1>
-                            <p className="text-muted-foreground mt-1 text-sm">
-                                {activeTab === 'dashboard' && "Let's continue your blessed journey."}
-                                {activeTab === 'analytics' && 'Visualize your progress and future milestones.'}
-                                {activeTab === 'settings' && 'Adjust your plan and personal details.'}
-                                {activeTab === 'coach' && 'Ask for motivation, tafsir, or memorization tips.'}
-                            </p>
+                        {/* Header with Sidebar Trigger and Breadcrumb */}
+                        <header className="mb-10 flex items-center justify-between">
+                            <div className="flex items-center gap-6">
+                                <SidebarTrigger className="h-8 w-8 hover:bg-accent hover:text-accent-foreground transition-colors" />
+                                {/* Modern minimal separator (just space or dot) - Removed vertical line */}
+
+                                <Breadcrumb>
+                                    <BreadcrumbList>
+                                        <BreadcrumbItem>
+                                            <BreadcrumbPage className="text-xl md:text-2xl font-light text-foreground tracking-tight">
+                                                {activeTab === 'dashboard' ? (
+                                                    <span className="flex items-center gap-2">
+                                                        Salam, <span className="font-semibold">{settings.name}</span>
+                                                    </span>
+                                                ) : (
+                                                    currentTab.title
+                                                )}
+                                            </BreadcrumbPage>
+                                        </BreadcrumbItem>
+                                    </BreadcrumbList>
+                                </Breadcrumb>
+                            </div>
+
+                            <div className="hidden md:flex items-center gap-3">
+                                <span className="text-xs text-muted-foreground uppercase tracking-widest font-mono">Status</span>
+                                <Badge variant="outline" className="flex items-center gap-2 px-3 py-1.5 rounded-full border-border bg-card/50 backdrop-blur-sm text-xs font-medium text-foreground">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-accent shadow-[0_0_8px_hsl(var(--accent))]"></span>
+                                    <span>Active</span>
+                                </Badge>
+                            </div>
+                        </header>
+
+                        {/* Subtitle - Increased spacing */}
+                        <div className="mb-12">
+                            <h2 className="text-sm md:text-base text-muted-foreground font-light max-w-2xl leading-relaxed">
+                                {currentTab.subtitle}
+                            </h2>
                         </div>
 
-                        <div className="hidden md:flex items-center gap-2 text-xs font-medium text-muted-foreground bg-card px-3 py-1.5 rounded-full shadow-sm border border-border">
-                            <span className="w-2 h-2 rounded-full bg-accent animate-pulse"></span>
-                            <span>On Track</span>
+                        {/* Tab Content */}
+                        <div className="flex-1 min-h-0">
+                            {activeTab === 'dashboard' && (
+                                <HafizDashboard settings={settings} stats={stats} />
+                            )}
+                            {activeTab === 'analytics' && (
+                                <HafizAnalytics settings={settings} stats={stats} />
+                            )}
+                            {activeTab === 'settings' && (
+                                <HafizSettings settings={settings} onSave={setSettings} />
+                            )}
+                            {activeTab === 'coach' && (
+                                <HafizAICoach userName={settings.name} />
+                            )}
                         </div>
-                    </header>
-
-                    {/* Tab Content */}
-                    <div className="flex-1 min-h-0">
-                        {activeTab === 'dashboard' && (
-                            <HafizDashboard settings={settings} stats={stats} />
-                        )}
-                        {activeTab === 'analytics' && (
-                            <HafizAnalytics settings={settings} stats={stats} />
-                        )}
-                        {activeTab === 'settings' && (
-                            <HafizSettings settings={settings} onSave={setSettings} />
-                        )}
-                        {activeTab === 'coach' && (
-                            <HafizAICoach userName={settings.name} />
-                        )}
                     </div>
-                </div>
-            </main>
-        </div>
+                </SidebarInset>
+            </div>
+        </SidebarProvider>
     );
 }
