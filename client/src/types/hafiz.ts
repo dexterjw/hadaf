@@ -16,7 +16,7 @@ export interface CompletionData {
   pagesRemaining: number;
 }
 
-export type HafizTab = 'dashboard' | 'analytics' | 'settings' | 'coach';
+export type HafizTab = 'dashboard' | 'dashboard-1' | 'dashboard-4' | 'dashboard-4-v1' | 'dashboard-4-v2' | 'dashboard-4-v3' | 'dashboard-5' | 'dashboard-6' | 'dashboard-7-gpt' | 'dashboard-healthy-heart' | 'dashboard-13' | 'journey-roadmap' | 'analytics' | 'settings' | 'coach';
 
 export const DEFAULT_SETTINGS: UserSettings = {
   name: "Student",

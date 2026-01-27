@@ -1,18 +1,20 @@
 import { useState } from "react";
 import { addDays, subDays } from "date-fns";
-import { FinishDateHero } from "@/components/hadaf/FinishDateHero";
-import { TimelineViz } from "@/components/hadaf/TimelineViz";
-import { ModeSwitcher } from "@/components/hadaf/ModeSwitcher";
-import { DailyActionCard } from "@/components/hadaf/DailyActionCard";
-import { RealityPanel } from "@/components/hadaf/RealityPanel";
+import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { FinishDateHero } from "@/components/hadaf/sections/FinishDateHero";
+import { TimelineViz } from "@/components/hadaf/charts/TimelineViz";
+import { ModeSwitcher } from "@/components/hadaf/features/ModeSwitcher";
+import { DailyActionCard } from "@/components/hadaf/cards/DailyActionCard";
+import { RealityPanel } from "@/components/hadaf/cards/RealityPanel";
 import { motion, AnimatePresence } from "framer-motion";
 
-import { ProgressDeficitChart } from "@/components/hadaf/ProgressDeficitChart";
-import { ProgressSurplusChart } from "@/components/hadaf/ProgressSurplusChart";
-import { JourneyMap } from "@/components/hadaf/JourneyMap";
+import { ProgressDeficitChart } from "@/components/hadaf/charts/ProgressDeficitChart";
+import { ProgressSurplusChart } from "@/components/hadaf/charts/ProgressSurplusChart";
+import { JourneyMap } from "@/components/hadaf/sections/JourneyMap";
 
 import { Link } from "wouter";
-import { BarChart3, PenTool } from "lucide-react";
+import { BarChart3, PenTool, ArrowLeft, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function HadafPrototype() {
@@ -20,7 +22,7 @@ export default function HadafPrototype() {
   const [finishDate, setFinishDate] = useState(addDays(new Date(), 180)); // ~6 months out
   const [status, setStatus] = useState<"on-track" | "warning" | "slip">("on-track");
   const [progress, setProgress] = useState(35); // 35% done
-  
+
   // Handlers for interactions
   const handleDailyAction = (type: "hit" | "miss" | "partial") => {
     if (type === "miss") {
@@ -75,16 +77,16 @@ export default function HadafPrototype() {
 
         {/* Hero Section - The Finish Date */}
         {/* Always visible but layout shifts slightly based on mode */}
-        <motion.div 
-          layout 
+        <motion.div
+          layout
           className="flex-1 flex flex-col justify-center min-h-[40vh]"
         >
           <FinishDateHero date={finishDate} status={status} />
-          
+
           <motion.div layout className="mt-8">
-            <TimelineViz 
-              progress={progress} 
-              startDate={subDays(new Date(), 60)} 
+            <TimelineViz
+              progress={progress}
+              startDate={subDays(new Date(), 60)}
               finishDate={finishDate}
               isStretched={status === 'slip'}
             />
@@ -105,7 +107,7 @@ export default function HadafPrototype() {
                 <div className="text-center mb-8 max-w-sm mx-auto">
                   <p className="text-lg font-medium">Ownership Required</p>
                   <p className="text-muted-foreground mt-2 leading-relaxed">
-                    Adjusting these variables will instantly shift your finish date. 
+                    Adjusting these variables will instantly shift your finish date.
                     No negotiation.
                   </p>
                 </div>
@@ -114,9 +116,9 @@ export default function HadafPrototype() {
                 <JourneyMap currentJuz={4} />
 
                 <RealityPanel onToggle={handleRealityToggle} />
-                
+
                 {/* Progress Deficit Chart */}
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.2 }}
@@ -125,7 +127,7 @@ export default function HadafPrototype() {
                 </motion.div>
 
                 {/* Progress Surplus Chart (Demo) */}
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.3 }}
@@ -141,7 +143,7 @@ export default function HadafPrototype() {
                 exit={{ opacity: 0, y: 20 }}
                 transition={{ duration: 0.3 }}
               >
-                 <div className="text-center mb-8 max-w-sm mx-auto">
+                <div className="text-center mb-8 max-w-sm mx-auto">
                   <p className="text-lg font-medium">Today is the Lever</p>
                   <p className="text-muted-foreground mt-2 leading-relaxed">
                     Your actions today directly impact the timeline above.

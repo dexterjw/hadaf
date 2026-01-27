@@ -16,7 +16,7 @@ function Router() {
       <Route path="/" component={HadafPrototype} />
       <Route path="/dashboard" component={TrackingDashboard} />
       <Route path="/log" component={LogProgressPage} />
-      <Route path="/hafiz" component={HafizPage} />
+      <Route path="/hafiz/:tab?" component={HafizPage} />
       <Route component={NotFound} />
     </Switch>
   );
