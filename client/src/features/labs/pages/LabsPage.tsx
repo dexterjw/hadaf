@@ -1,130 +1,158 @@
 import { Link } from "wouter";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, Rocket, Zap } from "lucide-react";
+import { ArrowRight, Sparkles, Rocket, Zap, FlaskConical } from "lucide-react";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export default function LabsPage() {
     const prototypes = [
         {
             id: "p1",
-            name: "Prototype 1",
-            description: "Timeline-driven goal tracking with habit streaks and analytics",
-            status: "Active",
+            name: "Hadaf Prototype 1",
+            description: "Timeline-driven goal tracking with habit streaks and deep analytics.",
+            status: "Live",
             icon: Sparkles,
             route: "/labs/p1",
-            gradient: "from-blue-500/20 to-purple-500/20",
+            color: "bg-blue-500",
+            gradient: "from-blue-500/10 via-purple-500/5 to-transparent",
         },
         {
             id: "p2",
-            name: "Prototype 2",
-            description: "Coming soon - Next iteration of the tracking experience",
-            status: "Coming Soon",
+            name: "Concept: Neural",
+            description: "AI-first tracking experience with predictive behavioral modeling.",
+            status: "In Development",
             icon: Rocket,
             route: "/labs/p2",
-            gradient: "from-green-500/20 to-teal-500/20",
+            color: "bg-emerald-500",
+            gradient: "from-emerald-500/10 via-teal-500/5 to-transparent",
         },
         {
             id: "p3",
-            name: "Prototype 3",
-            description: "Coming soon - Future experimental features",
-            status: "Coming Soon",
+            name: "Project: Void",
+            description: "Experimental interface for distraction-free deep work sessions.",
+            status: "Planned",
             icon: Zap,
             route: "/labs/p3",
-            gradient: "from-orange-500/20 to-pink-500/20",
+            color: "bg-orange-500",
+            gradient: "from-orange-500/10 via-red-500/5 to-transparent",
         },
     ];
 
     return (
-        <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 py-12">
-            {/* Background gradient */}
-            <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px]" />
-                <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-accent/5 rounded-full blur-[120px]" />
+        <div className="min-h-screen bg-[#050505] text-foreground flex flex-col relative overflow-hidden selection:bg-primary/20 font-light">
+            {/* Ambient Background & "Spice" */}
+            <div className="fixed inset-0 pointer-events-none">
+                {/* Top Center Spotlight / "Glue" */}
+                <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[80%] h-[600px] bg-gradient-to-b from-white/5 to-transparent blur-[120px] mix-blend-soft-light" />
+
+                {/* Subtle colored orbs */}
+                <div className="absolute top-0 left-[-10%] w-[500px] h-[500px] bg-indigo-500/5 rounded-full blur-[120px] mix-blend-screen animate-pulse-slow" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-fuchsia-500/5 rounded-full blur-[100px] mix-blend-screen opacity-30" />
+                <div className="absolute top-[30%] right-[20%] w-[300px] h-[300px] bg-blue-500/5 rounded-full blur-[80px] mix-blend-screen opacity-20" />
+
+                {/* Noise texture */}
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.02] brightness-100 contrast-150" />
             </div>
 
-            <div className="w-full max-w-5xl mx-auto z-10 space-y-12">
+            <main className="flex-1 w-full max-w-7xl mx-auto px-6 py-24 relative z-10 flex flex-col items-center justify-center">
+
                 {/* Header */}
-                <div className="text-center space-y-4">
-                    <h1 className="text-5xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    className="text-center space-y-8 mb-24 max-w-3xl"
+                >
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] text-[10px] uppercase tracking-widest text-muted-foreground/70 backdrop-blur-md">
+                        <FlaskConical className="w-3 h-3" />
+                        <span>Research & Development</span>
+                    </div>
+
+                    <h1 className="text-7xl md:text-9xl font-thin tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-white/80 to-white/40 pb-4">
                         Labs
                     </h1>
-                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                        Experimental prototypes exploring different approaches to goal tracking and habit formation
-                    </p>
-                </div>
 
-                {/* Prototype Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {prototypes.map((prototype) => {
+                    <p className="text-lg text-neutral-400/80 font-extralight leading-relaxed max-w-xl mx-auto tracking-wide">
+                        A playground for experimental interfaces and next-generation tracking concepts.
+                    </p>
+                </motion.div>
+
+                {/* Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl">
+                    {prototypes.map((prototype, index) => {
                         const Icon = prototype.icon;
-                        const isActive = prototype.status === "Active";
+                        const isLive = prototype.status === "Live";
 
                         return (
-                            <Card
+                            <motion.div
                                 key={prototype.id}
-                                className={`relative overflow-hidden border-2 transition-all duration-300 ${isActive
-                                        ? "hover:shadow-lg hover:scale-[1.02] cursor-pointer border-primary/20"
-                                        : "opacity-60 border-muted"
-                                    }`}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: index * 0.1 + 0.2, ease: "easeOut" }}
                             >
-                                <Link href={prototype.route}>
-                                    <div className="p-6 space-y-4">
-                                        {/* Gradient background */}
-                                        <div
-                                            className={`absolute inset-0 bg-gradient-to-br ${prototype.gradient} opacity-50`}
-                                        />
+                                <Link
+                                    href={prototype.route}
+                                    className={cn(
+                                        "group relative block h-full overflow-hidden rounded-[2rem] bg-neutral-900/20 border border-white/5 transition-all duration-700 backdrop-blur-sm",
+                                        isLive ? "hover:border-white/10 hover:bg-neutral-900/40 cursor-pointer" : "opacity-50 cursor-not-allowed hover:opacity-60"
+                                    )}
+                                >
+                                    {/* Hover Gradient Spotlight */}
+                                    <div
+                                        className={cn(
+                                            "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 bg-gradient-to-b",
+                                            prototype.gradient
+                                        )}
+                                    />
 
-                                        {/* Content */}
-                                        <div className="relative z-10">
-                                            <div className="flex items-start justify-between mb-3">
-                                                <div className="p-3 rounded-lg bg-background/80 backdrop-blur-sm border">
-                                                    <Icon className="w-6 h-6" />
-                                                </div>
-                                                <span
-                                                    className={`px-2 py-1 rounded-full text-xs font-medium ${isActive
-                                                            ? "bg-primary/20 text-primary border border-primary/30"
-                                                            : "bg-muted text-muted-foreground border border-muted-foreground/30"
-                                                        }`}
-                                                >
-                                                    {prototype.status}
-                                                </span>
+                                    <div className="relative p-8 h-full flex flex-col">
+                                        <div className="flex items-start justify-between mb-10">
+                                            <div className="p-3 rounded-2xl bg-white/[0.02] border border-white/[0.05] group-hover:bg-white/[0.05] transition-colors duration-500">
+                                                <Icon className="w-5 h-5 text-neutral-300" strokeWidth={1.5} />
                                             </div>
+                                            <span className={cn(
+                                                "px-2.5 py-1 rounded-full text-[10px] uppercase tracking-widest font-medium border",
+                                                isLive
+                                                    ? "bg-white/[0.03] text-neutral-300 border-white/[0.05]"
+                                                    : "bg-transparent text-neutral-600 border-transparent"
+                                            )}>
+                                                {prototype.status}
+                                            </span>
+                                        </div>
 
-                                            <h3 className="text-xl font-semibold mb-2">
+                                        <div className="space-y-4 mb-8 flex-1">
+                                            <h3 className="text-2xl font-light tracking-tight text-neutral-100 group-hover:text-white transition-colors">
                                                 {prototype.name}
                                             </h3>
-                                            <p className="text-sm text-muted-foreground leading-relaxed">
+                                            <p className="text-neutral-500 leading-relaxed text-sm font-extralight tracking-wide">
                                                 {prototype.description}
                                             </p>
+                                        </div>
 
-                                            {isActive && (
-                                                <div className="mt-4 pt-4 border-t border-border/50">
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        className="w-full justify-between group"
-                                                    >
-                                                        <span>Explore</span>
-                                                        <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                                                    </Button>
-                                                </div>
+                                        <div className="flex items-center text-xs font-medium tracking-widest uppercase text-neutral-600 group-hover:text-neutral-300 transition-colors">
+                                            <span>{isLive ? "Enter Prototype" : "Awaiting Access"}</span>
+                                            {isLive && (
+                                                <ArrowRight className="w-3.5 h-3.5 ml-2 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 ease-out" />
                                             )}
                                         </div>
                                     </div>
                                 </Link>
-                            </Card>
+                            </motion.div>
                         );
                     })}
                 </div>
 
-                {/* Footer note */}
-                <div className="text-center">
-                    <p className="text-sm text-muted-foreground">
-                        Each prototype explores different concepts and user experiences.{" "}
-                        <span className="text-foreground font-medium">Prototype 1</span> is currently available for testing.
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.8, duration: 1 }}
+                    className="mt-32 text-center"
+                >
+                    <p className="text-[10px] text-neutral-600 uppercase tracking-[0.3em] font-light opacity-50">
+                        Ideaverse Research Logic • Est. 2024
                     </p>
-                </div>
-            </div>
+                </motion.div>
+            </main>
         </div>
     );
 }
+
