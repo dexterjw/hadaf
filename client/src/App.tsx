@@ -11,6 +11,9 @@ import {
   LogProgressPage,
   Prototype2Page,
   Prototype3Page,
+  Prototype4Page,
+  Prototype5Page,
+  Prototype6Page,
 } from "@/pages";
 
 function Router() {
@@ -23,6 +26,9 @@ function Router() {
       <Route path="/labs/p1/log" component={LogProgressPage} />
       <Route path="/labs/p2" component={Prototype2Page} />
       <Route path="/labs/p3" component={Prototype3Page} />
+      <Route path="/labs/p4" component={Prototype4Page} />
+      <Route path="/labs/p5" component={Prototype5Page} />
+      <Route path="/labs/p6" component={Prototype6Page} />
 
       {/* Prototype 2 with Dashboard system */}
       <Route path="/labs/p2/:tab?" component={Prototype2Page} />

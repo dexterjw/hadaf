@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { ArrowRight, Sparkles, Rocket, Zap, FlaskConical } from "lucide-react";
+import { ArrowRight, Sparkles, Rocket, Zap, FlaskConical, Activity, Disc, Type } from "lucide-react";
 import { motion, useMotionTemplate, useMotionValue, useSpring } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useEffect } from "react";
@@ -60,6 +60,33 @@ export default function LabsPage() {
             icon: Zap,
             route: "/labs/p3",
             neonColor: "from-fuchsia-500/10 to-pink-500/10",
+        },
+        {
+            id: "p4",
+            name: "Hadaf Prototype 4",
+            description: "Visual timeline planning with elastic velocity controls.",
+            status: "In Development",
+            icon: Activity,
+            route: "/labs/p4",
+            neonColor: "from-cyan-500/10 to-blue-500/10",
+        },
+        {
+            id: "p5",
+            name: "Hadaf Prototype 5",
+            description: "Radial interface focusing on momentum and pace rhythm.",
+            status: "In Development",
+            icon: Disc,
+            route: "/labs/p5",
+            neonColor: "from-emerald-500/10 to-green-500/10",
+        },
+        {
+            id: "p6",
+            name: "Hadaf Prototype 6",
+            description: "Typographic-first experience. Just you and your goal.",
+            status: "In Development",
+            icon: Type,
+            route: "/labs/p6",
+            neonColor: "from-neutral-500/10 to-white/10",
         },
     ];
 
