@@ -72,17 +72,31 @@
 **Functional Requirements (FR):**
 
 * **FR-10 Non-Linear Visualization:** Display a line graph showing cumulative progress over time.  
-* **FR-11 Holiday Markers:** Visually indicate periods of flat progress (breaks).
+* **FR-11 Holiday Markers:** Visually indicate periods of flat progress (breaks).  
+* **FR-10a Prominent Display:** Chart must be one of the largest components in the interface, utilizing maximum available screen space.
 
 **UI Specifications:**
 
-* **Type:** Line Chart (X-Axis: Date, Y-Axis: Juz Completed).  
-* **Curve Style:** Monotone or natural curve (not jagged steps).  
-* **Annotations:** Visually distinct vertical regions representing major breaks:  
-  * *March Break*  
-  * *August Break*  
-  * *December Break*  
-* **Interaction:** Hovering over the line shows the expected Juz number for that specific month.
+* **Size & Layout:**  
+  * Chart should occupy a prominent position and maximum horizontal/vertical space available.  
+  * Prioritize chart readability over compactness—this is a primary decision-making tool.  
+* **Chart Type:** Line Chart (X-Axis: Time, Y-Axis: Juz Completed).  
+* **Curve Style:** Smooth, non-linear curve (monotone or natural) reflecting the velocity phases—avoid jagged steps.  
+* **X-Axis (Time) Formatting:**  
+  * Primary labels: Display **month names only** (e.g., "Jan", "Feb", "Mar").  
+  * Year indicators: When the year changes, display the **year underneath** the month label (e.g., "Jan" with "2027" below it).  
+  * Ensure labels remain readable even when timeline spans multiple years.  
+* **Y-Axis (Progress):** Display Juz milestones (0–30), with clear gridlines for reference.  
+* **Break/Holiday Visualization:**  
+  * Display breaks as **vertical indicators** (e.g., lines, bars, or zones) to minimize horizontal space usage.  
+  * Avoid overlap and crowding—especially critical for multi-year timelines with many breaks.  
+  * Consider techniques such as: stacking labels, using icons/abbreviations, or interactive tooltips to handle dense break periods.  
+* **Multi-Year Optimization:**  
+  * Ensure the design remains readable and uncluttered when timeline extends 2+ years.  
+  * Adaptive spacing/scaling techniques are encouraged to prevent visual cramping.  
+* **Interaction:**  
+  * Hovering over the progress line shows the expected Juz number and date for that point.  
+  * Hovering over break indicators shows break name and date range.
 
 ### **3.5 Component: VelocityTuner (Advanced Configuration)**
 
@@ -108,7 +122,41 @@
   * Ensure phase names remain semantically consistent with their intensity values (e.g., Warm-up should have lower lines/day than Acceleration).  
   * Ensure phases don't overlap in the timeline (sequential progression from Phase 1 → Phase 2 → Phase 3).
 
-### **3.6 Logic Integration (Advanced Simulation)**
+### **3.6 Component: HolidayManager (Break Configuration)**
+
+**Functional Requirements (FR):**
+
+* **FR-13 Custom Break Management:** Allow users to view, edit, add, and remove break periods (holidays/vacations) that pause the memorization timeline.
+* **FR-14 Seasonal Holiday Import:** Option to import common seasonal/religious holidays automatically.
+
+**UI Specifications:**
+
+* **Location:** Collapsible section or Modal labeled "Break Configuration" or "Holiday Management".  
+* **Default Breaks Display:** List view showing pre-configured breaks:  
+  * **March Break:** March 10 – March 18  
+  * **August Break:** August 20 – August 31  
+  * **Winter Break:** December 20 – January 2  
+* **Controls:**  
+  * **Edit Break:** Click on any existing break to modify:  
+    * *Name:* Text input (e.g., "March Break", "Family Vacation").  
+    * *Start Date:* Date picker.  
+    * *End Date:* Date picker.  
+    * *Recurrence:* Dropdown/Toggle (Annual, One-time).  
+  * **Add Custom Break:** Button to create new break periods with the same fields as above.  
+  * **Delete Break:** Option to remove any break (including defaults).  
+  * **Import Holidays:** Button/Toggle to auto-add common holidays:  
+    * *Option 1:* Regional holidays (e.g., US, Canada, UK holidays).  
+    * *Option 2:* Religious holidays (e.g., Ramadan, Eid, major Islamic dates).  
+    * Display a checklist of available holidays to selectively import.  
+* **Visual Feedback:**  
+  * Show total number of off-days being applied to the timeline.  
+  * Display how breaks affect the projected completion date (e.g., "+15 days added").  
+* **Validation:**  
+  * Ensure Start Date is before End Date.  
+  * Warn if breaks overlap with each other.  
+  * Highlight if a break extends beyond the projected completion date.
+
+### **3.7 Logic Integration (Advanced Simulation)**
 
 **Core Algorithm Updates:**
 
