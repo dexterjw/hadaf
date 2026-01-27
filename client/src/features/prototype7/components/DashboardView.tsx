@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
     ArrowLeft, Settings2, Calendar, ChevronDown, ChevronUp, 
@@ -15,7 +15,7 @@ import {
     CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { format, getMonth, getYear } from "date-fns";
 import {
     LineChart,
     Line,
@@ -24,15 +24,14 @@ import {
     CartesianGrid,
     Tooltip,
     ResponsiveContainer,
-    ReferenceLine,
+    ReferenceArea,
 } from "recharts";
 
 import { ProjectionResult, validatePhases } from "../utils";
 import { 
     AdvancedSettings, 
     VelocityPhase, 
-    HolidayBreak, 
-    DEFAULT_VELOCITY_PHASES 
+    HolidayBreak
 } from "../types";
 
 interface DashboardViewProps {
@@ -61,27 +60,79 @@ export default function DashboardView({
     const timeDelta = baseProjection.daysNeeded - projection.daysNeeded;
     const monthsDelta = Math.round(Math.abs(timeDelta) / 30);
 
-    // Prepare chart data
-    const chartData = projection.progressPoints.map((point) => ({
-        date: point.date,
-        dateLabel: format(point.date, "MMM"),
-        year: format(point.date, "yyyy"),
-        juz: Math.round(point.juzCompleted * 10) / 10,
-        phase: point.phase,
-        isBreak: point.isBreak,
-        breakName: point.breakName,
-    }));
-
-    // Get break periods for reference lines
-    const breakPeriods = projection.progressPoints
-        .filter(p => p.isBreak)
-        .reduce((acc, p) => {
-            const key = p.breakName || "Break";
-            if (!acc.find(b => b.name === key)) {
-                acc.push({ name: key, date: p.date });
+    // Prepare chart data - filter out individual break days, keep only progress points
+    const chartData = useMemo(() => {
+        // Filter to only non-break progress points
+        const progressOnly = projection.progressPoints.filter(p => !p.isBreak);
+        
+        let lastMonth = -1;
+        let lastYear = -1;
+        
+        return progressOnly.map((point, index) => {
+            const month = getMonth(point.date);
+            const year = getYear(point.date);
+            
+            // Determine label - show month when it changes
+            let label = "";
+            let showYear = false;
+            
+            if (month !== lastMonth) {
+                label = format(point.date, "MMM");
+                if (year !== lastYear && lastYear !== -1) {
+                    showYear = true;
+                }
+                lastMonth = month;
             }
-            return acc;
-        }, [] as { name: string; date: Date }[]);
+            if (year !== lastYear) {
+                lastYear = year;
+            }
+            
+            return {
+                index,
+                date: point.date,
+                dateLabel: label,
+                fullDate: format(point.date, "MMM d, yyyy"),
+                year: format(point.date, "yyyy"),
+                showYear,
+                juz: Math.round(point.juzCompleted * 10) / 10,
+                phase: point.phase,
+            };
+        });
+    }, [projection.progressPoints]);
+
+    // Get break periods for shaded areas
+    const breakAreas = useMemo(() => {
+        const areas: { name: string; startIndex: number; endIndex: number }[] = [];
+        let currentBreak: { name: string; startIndex: number } | null = null;
+        
+        // Find break periods by looking at gaps or break markers in progress
+        projection.progressPoints.forEach((point, i) => {
+            if (point.isBreak) {
+                if (!currentBreak) {
+                    // Find the closest chart data index
+                    const chartIndex = chartData.findIndex(
+                        cd => cd.date >= point.date
+                    );
+                    currentBreak = { 
+                        name: point.breakName || "Break", 
+                        startIndex: Math.max(0, chartIndex - 1)
+                    };
+                }
+            } else if (currentBreak) {
+                const chartIndex = chartData.findIndex(
+                    cd => cd.date >= point.date
+                );
+                areas.push({
+                    name: currentBreak.name,
+                    startIndex: currentBreak.startIndex,
+                    endIndex: Math.min(chartData.length - 1, chartIndex),
+                });
+                currentBreak = null;
+            }
+        });
+        
+        return areas;
+    }, [projection.progressPoints, chartData]);
 
     const phaseValidation = validatePhases(advancedSettings.velocityPhases);
 
@@ -232,8 +283,8 @@ export default function DashboardView({
                         </div>
                     </div>
 
-                    {/* Progress Chart */}
-                    <div className="flex-1 bg-neutral-900/50 rounded-2xl border border-neutral-800/50 p-6 min-h-[300px]">
+                    {/* Progress Chart - PROMINENT DISPLAY per spec FR-10a */}
+                    <div className="flex-1 bg-neutral-900/50 rounded-2xl border border-neutral-800/50 p-6 min-h-[400px]">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-sm font-medium text-neutral-400 uppercase tracking-wider">
                                 Progress Timeline
@@ -244,73 +295,115 @@ export default function DashboardView({
                                     Progress
                                 </span>
                                 <span className="flex items-center gap-1.5">
-                                    <div className="w-2 h-0.5 bg-rose-400/50" />
+                                    <div className="w-3 h-3 rounded bg-rose-500/20 border border-rose-500/30" />
                                     Breaks
                                 </span>
                             </div>
                         </div>
 
-                        <ResponsiveContainer width="100%" height="100%" minHeight={250}>
-                            <LineChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 20 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#222" />
-                                <XAxis
-                                    dataKey="dateLabel"
-                                    stroke="#555"
-                                    fontSize={10}
-                                    tickLine={false}
-                                    axisLine={false}
-                                    interval="preserveStartEnd"
-                                />
-                                <YAxis
-                                    domain={[0, 30]}
-                                    stroke="#555"
-                                    fontSize={10}
-                                    tickLine={false}
-                                    axisLine={false}
-                                    ticks={[0, 5, 10, 15, 20, 25, 30]}
-                                    label={{ 
-                                        value: 'Juz', 
-                                        angle: -90, 
-                                        position: 'insideLeft',
-                                        style: { fontSize: 10, fill: '#555' }
-                                    }}
-                                />
-                                <Tooltip
-                                    contentStyle={{
-                                        backgroundColor: '#111',
-                                        border: '1px solid #333',
-                                        borderRadius: '8px',
-                                        fontSize: '12px',
-                                    }}
-                                    formatter={(value: number) => [`${value.toFixed(1)} Juz`, 'Progress']}
-                                    labelFormatter={(_, payload) => {
-                                        if (payload && payload[0]) {
-                                            const data = payload[0].payload;
-                                            return format(data.date, "MMM d, yyyy");
-                                        }
-                                        return '';
-                                    }}
-                                />
-                                {/* Break Reference Lines */}
-                                {breakPeriods.slice(0, 10).map((bp, i) => (
-                                    <ReferenceLine
-                                        key={i}
-                                        x={format(bp.date, "MMM")}
-                                        stroke="#f43f5e"
-                                        strokeDasharray="3 3"
-                                        strokeOpacity={0.4}
+                        <div className="h-[calc(100%-40px)]">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart 
+                                    data={chartData} 
+                                    margin={{ top: 20, right: 30, left: 10, bottom: 30 }}
+                                >
+                                    <defs>
+                                        <linearGradient id="progressGradientP7" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stopColor="#10b981" stopOpacity={0.3} />
+                                            <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    
+                                    <CartesianGrid 
+                                        strokeDasharray="3 3" 
+                                        stroke="#1a1a1a" 
+                                        vertical={false}
                                     />
-                                ))}
-                                <Line
-                                    type="monotone"
-                                    dataKey="juz"
-                                    stroke="#10b981"
-                                    strokeWidth={2}
-                                    dot={false}
-                                    activeDot={{ r: 4, fill: '#10b981' }}
-                                />
-                            </LineChart>
-                        </ResponsiveContainer>
+                                    
+                                    {/* Break areas - shaded regions */}
+                                    {breakAreas.slice(0, 10).map((area, i) => (
+                                        <ReferenceArea
+                                            key={i}
+                                            x1={area.startIndex}
+                                            x2={area.endIndex}
+                                            fill="#f43f5e"
+                                            fillOpacity={0.1}
+                                            stroke="#f43f5e"
+                                            strokeOpacity={0.3}
+                                            strokeDasharray="3 3"
+                                        />
+                                    ))}
+                                    
+                                    <XAxis
+                                        dataKey="index"
+                                        stroke="#444"
+                                        fontSize={10}
+                                        tickLine={false}
+                                        axisLine={{ stroke: '#333' }}
+                                        tickFormatter={(value) => {
+                                            const point = chartData[value];
+                                            if (point && point.dateLabel) {
+                                                return point.showYear 
+                                                    ? `${point.dateLabel} '${point.year.slice(2)}`
+                                                    : point.dateLabel;
+                                            }
+                                            return '';
+                                        }}
+                                        interval="preserveStartEnd"
+                                        tick={{ fill: '#666' }}
+                                    />
+                                    
+                                    <YAxis
+                                        domain={[0, 30]}
+                                        stroke="#444"
+                                        fontSize={10}
+                                        tickLine={false}
+                                        axisLine={false}
+                                        ticks={[0, 5, 10, 15, 20, 25, 30]}
+                                        tick={{ fill: '#666' }}
+                                        width={35}
+                                        tickFormatter={(value) => value === 30 ? 'Khatam' : `${value}`}
+                                    />
+                                    
+                                    <Tooltip
+                                        contentStyle={{
+                                            backgroundColor: 'rgba(17, 17, 17, 0.95)',
+                                            border: '1px solid #333',
+                                            borderRadius: '12px',
+                                            fontSize: '12px',
+                                            boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
+                                        }}
+                                        formatter={(value: number) => [`${value.toFixed(1)} Juz`, 'Progress']}
+                                        labelFormatter={(value) => {
+                                            const point = chartData[value as number];
+                                            if (point) {
+                                                return (
+                                                    <span className="text-neutral-300">
+                                                        {point.fullDate}
+                                                        <span className="ml-2 text-neutral-500">({point.phase})</span>
+                                                    </span>
+                                                );
+                                            }
+                                            return '';
+                                        }}
+                                    />
+                                    
+                                    <Line
+                                        type="monotone"
+                                        dataKey="juz"
+                                        stroke="#10b981"
+                                        strokeWidth={2.5}
+                                        dot={false}
+                                        activeDot={{ 
+                                            r: 6, 
+                                            fill: '#10b981',
+                                            stroke: '#10b981',
+                                            strokeWidth: 2,
+                                        }}
+                                    />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </div>
                     </div>
                 </div>
 

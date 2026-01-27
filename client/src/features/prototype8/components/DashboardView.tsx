@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
+import {
     ArrowLeft, Calendar, TrendingUp, Clock, Target
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ import {
 } from "recharts";
 
 import { ProjectionResult } from "../utils";
+import { QuranStandard } from "../types";
 
 interface DashboardViewProps {
     projection: ProjectionResult;
@@ -26,6 +27,7 @@ interface DashboardViewProps {
     adjustedPace: number;
     setAdjustedPace: (pace: number) => void;
     onReset: () => void;
+    quranStandard: QuranStandard;
 }
 
 // Custom tooltip component
@@ -44,8 +46,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
                     <span className={cn(
                         "px-2 py-0.5 rounded-full",
                         data.phase === "Warm-up" ? "bg-emerald-500/20 text-emerald-400" :
-                        data.phase === "Flow State" ? "bg-sky-500/20 text-sky-400" :
-                        "bg-violet-500/20 text-violet-400"
+                            data.phase === "Flow State" ? "bg-sky-500/20 text-sky-400" :
+                                "bg-violet-500/20 text-violet-400"
                     )}>
                         {data.phase}
                     </span>
@@ -62,6 +64,7 @@ export default function DashboardView({
     adjustedPace,
     setAdjustedPace,
     onReset,
+    quranStandard,
 }: DashboardViewProps) {
     const [showBreaks, setShowBreaks] = useState(true);
 
@@ -72,11 +75,11 @@ export default function DashboardView({
     const chartData = useMemo(() => {
         let lastMonth = "";
         let lastYear = "";
-        
+
         return projection.chartData.map((point, i) => {
             const month = format(point.date, "MMM");
             const year = format(point.date, "yyyy");
-            
+
             let label = "";
             if (month !== lastMonth) {
                 label = month;
@@ -225,14 +228,19 @@ export default function DashboardView({
                     <div className="bg-neutral-900/50 rounded-xl border border-neutral-800/50 p-5 mt-auto">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-sm font-medium text-neutral-400">Simulate Pace</span>
-                            <span className={cn(
-                                "text-2xl font-light tabular-nums",
-                                adjustedPace > 25 ? "text-amber-400" : "text-white"
-                            )}>
-                                {adjustedPace}
-                            </span>
+                            <div className="text-right">
+                                <div className={cn(
+                                    "text-2xl font-light tabular-nums",
+                                    adjustedPace > 25 ? "text-amber-400" : "text-white"
+                                )}>
+                                    {adjustedPace}
+                                </div>
+                                <div className="text-xs text-neutral-500 tabular-nums">
+                                    ≈ {(adjustedPace / quranStandard).toFixed(1)} pages/day
+                                </div>
+                            </div>
                         </div>
-                        
+
                         <Slider
                             value={[adjustedPace]}
                             onValueChange={(v) => setAdjustedPace(v[0])}
@@ -241,7 +249,7 @@ export default function DashboardView({
                             step={1}
                             className="mb-3"
                         />
-                        
+
                         <div className="flex justify-between text-[9px] text-neutral-600 uppercase tracking-wider">
                             <span>1</span>
                             <span className="text-neutral-500">lines per day</span>
@@ -289,9 +297,9 @@ export default function DashboardView({
                                     </linearGradient>
                                 </defs>
 
-                                <CartesianGrid 
-                                    strokeDasharray="3 3" 
-                                    stroke="#1f1f1f" 
+                                <CartesianGrid
+                                    strokeDasharray="3 3"
+                                    stroke="#1f1f1f"
                                     vertical={false}
                                 />
 

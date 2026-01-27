@@ -55,9 +55,9 @@ export default function Prototype8Page() {
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vh] bg-sky-500/5 blur-[200px] rounded-full" />
                 <div className="absolute bottom-[-10%] left-[-10%] w-[40vw] h-[40vh] bg-indigo-500/5 blur-[180px] rounded-full" />
-                
+
                 {/* Grid pattern */}
-                <div 
+                <div
                     className="absolute inset-0 opacity-[0.02]"
                     style={{
                         backgroundImage: `
@@ -72,9 +72,9 @@ export default function Prototype8Page() {
             {/* Header */}
             <header className="relative z-10 px-6 py-4 flex justify-between items-center">
                 <Link href="/labs">
-                    <Button 
-                        variant="ghost" 
-                        size="sm" 
+                    <Button
+                        variant="ghost"
+                        size="sm"
                         className="gap-2 text-neutral-500 hover:text-white transition-colors"
                     >
                         ← Labs
@@ -106,6 +106,7 @@ export default function Prototype8Page() {
                             adjustedPace={adjustedPace}
                             setAdjustedPace={setAdjustedPace}
                             onReset={handleReset}
+                            quranStandard={studentData.quranStandard}
                         />
                     )}
                 </AnimatePresence>

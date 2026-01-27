@@ -1,5 +1,5 @@
 import { StudentData, AdvancedSettings, VelocityPhase, HolidayBreak } from "./types";
-import { addDays, isWithinInterval, eachDayOfInterval, getYear, setYear } from "date-fns";
+import { addDays, isWithinInterval, getYear, setYear } from "date-fns";
 
 export const TOTAL_PAGES = 604;
 export const PAGES_PER_JUZ = 20;
@@ -26,58 +26,6 @@ export interface ProjectionResult {
     progressPoints: ProgressPoint[];
     totalBreakDays: number;
     totalSickDays: number;
-}
-
-/**
- * Gets all break dates within a given date range, handling annual recurrence
- */
-function getBreakDatesInRange(
-    holidays: HolidayBreak[],
-    startDate: Date,
-    endDate: Date
-): { date: Date; breakName: string }[] {
-    const breakDates: { date: Date; breakName: string }[] = [];
-    const startYear = getYear(startDate);
-    const endYear = getYear(endDate);
-
-    for (const holiday of holidays) {
-        if (holiday.isAnnual) {
-            // For annual holidays, check each year in the range
-            for (let year = startYear; year <= endYear; year++) {
-                const adjustedStart = setYear(holiday.startDate, year);
-                let adjustedEnd = setYear(holiday.endDate, year);
-                
-                // Handle cross-year breaks (like Winter Break Dec-Jan)
-                if (adjustedEnd < adjustedStart) {
-                    adjustedEnd = setYear(holiday.endDate, year + 1);
-                }
-
-                // Get all days in this break period that fall within our range
-                if (adjustedStart <= endDate && adjustedEnd >= startDate) {
-                    const effectiveStart = adjustedStart > startDate ? adjustedStart : startDate;
-                    const effectiveEnd = adjustedEnd < endDate ? adjustedEnd : endDate;
-                    
-                    const daysInBreak = eachDayOfInterval({ start: effectiveStart, end: effectiveEnd });
-                    daysInBreak.forEach(d => {
-                        breakDates.push({ date: d, breakName: holiday.name });
-                    });
-                }
-            }
-        } else {
-            // One-time holiday
-            if (holiday.startDate <= endDate && holiday.endDate >= startDate) {
-                const effectiveStart = holiday.startDate > startDate ? holiday.startDate : startDate;
-                const effectiveEnd = holiday.endDate < endDate ? holiday.endDate : endDate;
-                
-                const daysInBreak = eachDayOfInterval({ start: effectiveStart, end: effectiveEnd });
-                daysInBreak.forEach(d => {
-                    breakDates.push({ date: d, breakName: holiday.name });
-                });
-            }
-        }
-    }
-
-    return breakDates;
 }
 
 /**
@@ -204,6 +152,9 @@ export function calculateProjection(
 
     const maxDays = 365 * 10; // Safety limit: 10 years
     let dayCount = 0;
+    let lastRecordedDay = 0;
+    let inBreakPeriod = false;
+    let currentBreakName = "";
 
     while (linesCompleted < totalLines && dayCount < maxDays) {
         currentDate = addDays(currentDate, 1);
@@ -213,15 +164,36 @@ export function calculateProjection(
         const breakCheck = isBreakDay(currentDate, settings.holidays);
         if (breakCheck.isBreak) {
             totalBreakDays++;
+            
+            // Mark that we entered a break (for recording a point when break starts)
+            if (!inBreakPeriod) {
+                inBreakPeriod = true;
+                currentBreakName = breakCheck.breakName || "Break";
+                // Record point at break start
+                progressPoints.push({
+                    date: new Date(currentDate),
+                    juzCompleted: linesCompleted / linesPerJuz,
+                    linesCompleted,
+                    phase: phaseLinesAllocation[phaseIndex]?.phaseName || "Flow",
+                    isBreak: true,
+                    breakName: currentBreakName,
+                });
+                lastRecordedDay = dayCount;
+            }
+            continue;
+        }
+        
+        // If we just exited a break, record the point
+        if (inBreakPeriod) {
+            inBreakPeriod = false;
+            // Record point at break end (will show flat line during break)
             progressPoints.push({
                 date: new Date(currentDate),
                 juzCompleted: linesCompleted / linesPerJuz,
                 linesCompleted,
                 phase: phaseLinesAllocation[phaseIndex]?.phaseName || "Flow",
-                isBreak: true,
-                breakName: breakCheck.breakName,
             });
-            continue;
+            lastRecordedDay = dayCount;
         }
         
         // Check if it's an active day based on days per week
@@ -245,8 +217,8 @@ export function calculateProjection(
             phaseIndex++;
         }
         
-        // Record progress point (sample every 7 days or at the end)
-        if (dayCount % 7 === 0 || linesCompleted >= totalLines) {
+        // Record progress point (sample every 7 days or at completion)
+        if (dayCount - lastRecordedDay >= 7 || linesCompleted >= totalLines) {
             progressPoints.push({
                 date: new Date(currentDate),
                 juzCompleted: linesCompleted / linesPerJuz,
@@ -254,6 +226,7 @@ export function calculateProjection(
                 phase: phaseLinesAllocation[phaseIndex]?.phaseName || 
                        phaseLinesAllocation[phaseLinesAllocation.length - 1]?.phaseName || "Flow",
             });
+            lastRecordedDay = dayCount;
         }
     }
 
