@@ -196,7 +196,7 @@ export default function LabsPage() {
 
                 <div className="mt-40 opacity-30 hover:opacity-100 transition-opacity duration-700">
                     <p className="text-[9px] text-neutral-500 uppercase tracking-[0.4em] font-light">
-                        Ideaverse Design • 2024
+                        Ideaverse Design • {new Date().getFullYear()}
                     </p>
                 </div>
             </main>
