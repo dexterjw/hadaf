@@ -1,0 +1,126 @@
+# **Hadaf: Comprehensive UI & Product Specification**
+
+## **1\. Product Context**
+
+**Goal:** A single-user prototype to simulate Quran memorization (Hifdh) timelines using dynamic forecasting.
+
+**Persona:** Parent/Prototyper modeling scenarios for a student.
+
+## **2\. Core User Flow**
+
+1. **Wizard:** User inputs baseline data (Script, Progress, Capacity).  
+2. **Dashboard:** User views forecast and experiments with the "Pace Slider".  
+3. **Tuning:** User opens "Advanced Settings" to customize the velocity curve (Warm-up vs. Flow state).  
+4. **Reset:** User clears data to restart.
+
+## **3\. Component Specifications**
+
+### **3.1 Component: WizardStepper (Data Collection)**
+
+**Functional Requirements (FR):**
+
+* **FR-01 Quran Standard:** Select 13 (indo-pak), 15 (Standard), or 16 lines (Uthmani).  
+* **FR-02 Current Position:** Input specifically by **Juz** and **Page within Juz**.  
+* **FR-03 Capacity:** Input "Average Lines per Day" and "Days per Week".
+
+**UI Specifications:**
+
+* **Step 1: Script Selection**  
+  * **Visual:** Three Selectable Cards (13-Line, 15-Line, 16-Line).  
+  * **State:** Visually distinguish the selected card (e.g., active border and background color).  
+* **Step 2: Progress Input**  
+  * **Fields:** Two numeric inputs side-by-side: Current Juz (1-30) and Page in Juz.  
+* **Step 3: Capacity Input**  
+  * **Active Days:** Row of buttons \[4\] \[5\] \[6\] \[7\].  
+  * **Base Pace:** Numeric input for "Lines per day".  
+* **Action:** "Generate Forecast" button (Primary CTA).
+
+### **3.2 Component: DashboardHeader (Feedback Layer)**
+
+**Functional Requirements (FR):**
+
+* **FR-09 Delta Display:** Visual indicator showing the difference between "Baseline" (Wizard input) and "Simulated" (Slider input) dates.
+
+**UI Specifications:**
+
+* **Layout:** Hero section at the top of the dashboard.  
+* **Elements:**  
+  * **Projected Date:** Large, dominant typography (e.g., "Oct 15, 2026").  
+  * **Delta Badge:** Pill-shaped indicator.  
+    * *Positive State:* "Saving X Months" (if Faster).  
+    * *Negative State:* "Delaying X Months" (if Slower).  
+    * *Neutral State:* "Standard Pace".
+
+### **3.3 Component: PaceSlider (The Simulator)**
+
+**Functional Requirements (FR):**
+
+* **FR-06 Simulation:** Updates the logic engine in real-time.  
+* **FR-08 Range:** Adjustable from 1 line to 45 lines/day.
+
+**UI Specifications:**
+
+* **Visuals:**  
+  * **Track:** Visual gradient indicating intensity (e.g., Sustainable \-\> Aggressive \-\> Burnout).  
+  * **Handle:** Large touch target.  
+* **Interaction:** Dragging triggers immediate date recalculation (no "Apply" button).  
+* **Feedback:** Label above slider displaying current value (e.g., "15 Lines / day").  
+* **Warning:** If value \> 25, show "⚠️ High Burnout Risk" alert below slider.
+
+### **3.4 Component: ProgressChart (Visualization)**
+
+**Functional Requirements (FR):**
+
+* **FR-10 Non-Linear Visualization:** Display a line graph showing cumulative progress over time.  
+* **FR-11 Holiday Markers:** Visually indicate periods of flat progress (breaks).
+
+**UI Specifications:**
+
+* **Type:** Line Chart (X-Axis: Date, Y-Axis: Juz Completed).  
+* **Curve Style:** Monotone or natural curve (not jagged steps).  
+* **Annotations:** Visually distinct vertical regions representing major breaks:  
+  * *March Break*  
+  * *August Break*  
+  * *December Break*  
+* **Interaction:** Hovering over the line shows the expected Juz number for that specific month.
+
+### **3.5 Component: VelocityTuner (Advanced Configuration)**
+
+**Functional Requirements (FR):**
+
+* **FR-12 Customizable Matrix:** Allow user to define the duration split and intensity of the three memorization phases.
+
+**UI Specifications:**
+
+* **Location:** Collapsible section or Modal labeled "Velocity Matrix".  
+* **Controls:**  
+  * **Phase 1: Warm-up**  
+    * *Duration:* Slider/Input (Default: 10% of remaining lines).  
+    * *Intensity:* Slider/Input (Default: 80% of base pace).  
+  * **Phase 2: Flow State**  
+    * *Duration:* Slider/Input (Default: 60% of remaining lines).  
+    * *Intensity:* Slider/Input (Default: 100% of base pace).  
+  * **Phase 3: Acceleration**  
+    * *Duration:* Auto-calculated (Remainder of 100%).  
+    * *Intensity:* Slider/Input (Default: 115% of base pace).  
+* **Validation:** Ensure Duration percentages sum to 100%.
+
+### **3.6 Logic Integration (Advanced Simulation)**
+
+**Core Algorithm Updates:**
+
+1. **Customizable Velocity Matrix:**  
+   * The calculation must apply the user-defined matrix to the *Remaining Lines*.  
+   * **Total Time Calculation:**  
+     Total\_Days\_Needed \= Days\_in\_Warmup \+ Days\_in\_Flow \+ Days\_in\_Accel  
+   * **Phase Calculation Logic:**  
+     Phase\_Days \= (Total\_Remaining\_Lines \* Phase\_Duration\_Percentage) / (Base\_Daily\_Pace \* Phase\_Intensity\_Percentage)  
+2. **Calendar Blackout Dates (Holidays):**  
+   * The "Active Days" logic must strictly exclude specific date ranges annually:  
+     * **March Break:** March 10 – March 18\.  
+     * **August Break:** August 20 – August 31\.  
+     * **Winter Break:** December 20 – January 2\.  
+3. **Sick Day Buffer (Probabilistic Loss):**  
+   * **Logic:** Subtract a flat **10 days** per year from the "Active Days" calculation (randomly distributed or averaged out as a capacity reduction factor of \~2.7%).  
+4. **Buffer Display:**  
+   * The displayed "Projected Date" must define the *end* of this calculated timeline, ensuring the holidays push the date forward rather than just being ignored.
