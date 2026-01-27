@@ -20,6 +20,14 @@
 **Functional Requirements (FR):**
 
 * **FR-01 Quran Standard:** Select 13 (indo-pak), 15 (Standard), or 16 lines (Uthmani).  
+  * Each Mushaf standard has different total pages and approximate pages per Juz:  
+    | Mushaf Standard | Approx. Total Pages | Avg. Pages per Juz |
+    |----------------|---------------------|--------------------|
+    | 13-line Indo-Pak | ~850–870 pages | ~28–29 pages/juz (variable) |
+    | 15-line Standard | ~604–611 pages | ~20 pages/juz |
+    | 16-line Uthmani | ~604 pages | ~20 pages/juz |
+  * **Default:** 15-line Standard with ~604 total pages.  
+  * **FR-01a Total Pages Customization:** User can input the exact total number of pages in their specific Mushaf to accurately predict script length and progression (system will proportionally distribute pages across Juz).  
 * **FR-02 Current Position:** Input specifically by **Juz** and **Page within Juz**.  
 * **FR-03 Capacity:** Input "Average Lines per Day" and "Days per Week".
 
@@ -28,6 +36,10 @@
 * **Step 1: Script Selection**  
   * **Visual:** Three Selectable Cards (13-Line, 15-Line, 16-Line).  
   * **State:** Visually distinguish the selected card (e.g., active border and background color).  
+  * **Display:** Show approximate total pages and average pages per Juz for each Mushaf standard on the card.  
+  * **Customization Option:** Optional "Enter Exact Total Pages" field where users can input the precise total page count from their specific Mushaf print (pre-populated with approximate defaults based on selected standard).  
+    * This allows users to account for variation in different prints and predict timeline more accurately.  
+    * The system will proportionally distribute the total pages across all 30 Juz based on typical Juz length ratios.  
 * **Step 2: Progress Input**  
   * **Fields:** Two numeric inputs side-by-side: Current Juz (1-30) and Page in Juz.  
 * **Step 3: Capacity Input**  
