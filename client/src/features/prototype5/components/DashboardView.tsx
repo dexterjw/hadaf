@@ -20,35 +20,35 @@ interface DashboardViewProps {
 
 const getDifficultyColor = (pace: number) => {
     if (pace <= 10) return {
-        text: "text-emerald-400",
-        bg: "bg-emerald-500",
-        border: "border-emerald-500",
-        shadow: "shadow-emerald-500/50",
-        stop: "#10b981", // emerald-500
+        text: "text-emerald-300",
+        bg: "bg-emerald-400", // for slider thumb
+        border: "border-emerald-400/30",
+        shadow: "shadow-emerald-400/20",
+        stop: "#6ee7b7", // emerald-300
         label: "Comfortable"
     };
     if (pace <= 20) return {
-        text: "text-yellow-400",
-        bg: "bg-yellow-500",
-        border: "border-yellow-500",
-        shadow: "shadow-yellow-500/50",
-        stop: "#eab308", // yellow-500
+        text: "text-amber-200",
+        bg: "bg-amber-300",
+        border: "border-amber-300/30",
+        shadow: "shadow-amber-300/20",
+        stop: "#fcd34d", // amber-300
         label: "Moderate"
     };
     if (pace <= 30) return {
-        text: "text-orange-400",
-        bg: "bg-orange-500",
-        border: "border-orange-500",
-        shadow: "shadow-orange-500/50",
-        stop: "#f97316", // orange-500
+        text: "text-orange-300",
+        bg: "bg-orange-400",
+        border: "border-orange-400/30",
+        shadow: "shadow-orange-400/20",
+        stop: "#fb923c", // orange-400
         label: "Intense"
     };
     return {
-        text: "text-red-500",
-        bg: "bg-red-600",
-        border: "border-red-600",
-        shadow: "shadow-red-600/50",
-        stop: "#dc2626", // red-600
+        text: "text-rose-300",
+        bg: "bg-rose-400",
+        border: "border-rose-400/30",
+        shadow: "shadow-rose-400/20",
+        stop: "#fb7185", // rose-400
         label: "Extreme"
     };
 };
@@ -78,11 +78,29 @@ export default function DashboardView({
         }
     }, [adjustedPace]);
 
-    // Calculate rotation: 0 to 45 lines -> -135deg to +135deg (270deg range)
-    const maxPace = 45;
-    const rotationRange = 270;
-    const startRotation = -135;
-    const currentRotation = startRotation + (adjustedPace / maxPace) * rotationRange;
+    // Geometry Constants
+    const CX = 200;
+    const CY = 180; // Vertically centered in 360 viewbox looks better? No, let's stick to a balanced point.
+    const R_TRACK = 140;
+    // We want the gauge to be open at the bottom.
+    // Start at 135 degrees (Bottom Left in SVG coords).
+    // Go clockwise to 45 degrees (Bottom Right in SVG coords).
+    // This covers 270 degrees (135 -> 180 -> 270 -> 360/0 -> 45).
+    const START_ANGLE_DEG = 135;
+    const END_ANGLE_DEG = 45; // Effectively 405 degrees (45 + 360) for clockwise sweep
+    const SWEEP_ARC_DEG = 270;
+
+    // Helper to get coordinates on the circle
+    const getCoord = (angleInDegrees: number, radius: number) => {
+        const angleInRadians = angleInDegrees * Math.PI / 180;
+        return {
+            x: CX + radius * Math.cos(angleInRadians),
+            y: CY + radius * Math.sin(angleInRadians)
+        };
+    };
+
+    const startPoint = getCoord(START_ANGLE_DEG, R_TRACK);
+    const endPoint = getCoord(END_ANGLE_DEG, R_TRACK);
 
     return (
         <motion.div
@@ -104,8 +122,8 @@ export default function DashboardView({
             {/* Top Stats - Minimalist Row */}
             <div className="w-full flex justify-between items-start px-8">
                 <div className="text-left">
-                    <div className="text-xs text-neutral-600 uppercase tracking-widest mb-1">Total Effort</div>
-                    <div className="text-xl font-light text-neutral-300">{projection.totalLines.toLocaleString()} <span className="text-xs text-neutral-600 ml-1">LINES</span></div>
+                    <div className="text-xs text-neutral-600 uppercase tracking-widest mb-1 font-medium">Total Effort</div>
+                    <div className="text-3xl font-light text-neutral-300">{projection.totalLines.toLocaleString()} <span className="text-sm text-neutral-600 ml-1 font-normal">lines</span></div>
                 </div>
 
                 {/* Delta Indicator */}
@@ -120,86 +138,129 @@ export default function DashboardView({
                             <div className={`text-xs uppercase tracking-widest mb-1 ${isFaster ? 'text-emerald-500/80' : 'text-rose-500/80'}`}>
                                 {isFaster ? 'Saved' : 'Delayed'}
                             </div>
-                            <div className={`text-xl font-light ${isFaster ? 'text-emerald-400' : 'text-rose-400'}`}>
-                                {Math.abs(timeDelta)} <span className="text-xs font-normal ml-1 opacity-60">DAYS</span>
+                            <div className={`text-3xl font-light ${isFaster ? 'text-emerald-400' : 'text-rose-400'}`}>
+                                {Math.abs(timeDelta)} <span className="text-sm font-normal ml-1 opacity-60">days</span>
                             </div>
                         </motion.div>
                     )}
                 </AnimatePresence>
             </div>
 
-            {/* THE KINETIC RING */}
-            <div className="relative w-[360px] h-[360px] flex items-center justify-center my-12">
+            {/* THE RACING GAUGE */}
+            <div className="relative w-[480px] h-[420px] flex items-center justify-center my-8">
 
-                {/* 1. Track (Static Base) */}
-                <div className="absolute inset-0 rounded-full border-[1.5px] border-white/[0.03]" />
-
-                {/* 2. Active Arc (Dynamic Gradient) */}
-                {/* SVG for perfect gradient arc control */}
-                <svg className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none">
-                    <circle
-                        cx="50%"
-                        cy="50%"
-                        r="179"
-                        fill="none"
-                        stroke="url(#gradient-ring)"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeDasharray={`${(adjustedPace / maxPace) * (2 * Math.PI * 179) * 0.75} ${2 * Math.PI * 179}`} // Partial stroke logic simplified for visual, 0.75 is approx 270deg
-                        style={{ transition: "stroke-dasharray 0.5s cubic-bezier(0.16, 1, 0.3, 1)" }}
-                    />
+                {/* SVG Gauge Container */}
+                <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 360">
                     <defs>
-                        <linearGradient id="gradient-ring" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor={styles.stop} stopOpacity="0.2" />
-                            <stop offset="100%" stopColor={styles.stop} stopOpacity="1" />
+                        <linearGradient id="gauge-gradient" x1="0%" y1="100%" x2="100%" y2="100%">
+                            {/* Adjusted gradient to be lighter/softer as requested */}
+                            <stop offset="0%" stopColor="#6ee7b7" stopOpacity="0.2" />   {/* Emerald-300 */}
+                            <stop offset="40%" stopColor="#fcd34d" stopOpacity="0.6" />   {/* Amber-300 */}
+                            <stop offset="80%" stopColor="#fb923c" stopOpacity="0.8" />   {/* Orange-400 */}
+                            <stop offset="100%" stopColor="#fb7185" stopOpacity="1" />    {/* Rose-400 */}
                         </linearGradient>
+                        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="4" result="blur" />
+                            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                        </filter>
                     </defs>
+
+                    {/* 1. Track Background (270 degrees arc) */}
+                    <path
+                        d={`M ${CX + R_TRACK * Math.cos(135 * Math.PI / 180)} ${CY + R_TRACK * Math.sin(135 * Math.PI / 180)} A ${R_TRACK} ${R_TRACK} 0 1 1 ${CX + R_TRACK * Math.cos(45 * Math.PI / 180)} ${CY + R_TRACK * Math.sin(45 * Math.PI / 180)}`}
+                        fill="none"
+                        stroke="#222"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                    />
+
+                    {/* 2. Tick Marks */}
+                    {Array.from({ length: 46 }).map((_, i) => {
+                        // Map 0-45 steps to angle 135 -> 405 (270 deg span)
+                        const angleDeg = 135 + (i / 45) * 270;
+                        const isMajor = i % 5 === 0;
+                        const rad = angleDeg * Math.PI / 180;
+
+                        const rInner = isMajor ? R_TRACK - 12 : R_TRACK - 4;
+                        const rOuter = R_TRACK + 10;
+
+                        const x1 = CX + rInner * Math.cos(rad);
+                        const y1 = CY + rInner * Math.sin(rad);
+                        const x2 = CX + rOuter * Math.cos(rad);
+                        const y2 = CY + rOuter * Math.sin(rad);
+
+                        // Color logic
+                        let tickColor = "#333";
+                        if (i <= adjustedPace) {
+                            if (i <= 10) tickColor = "#6ee7b7"; // Emerald-300
+                            else if (i <= 20) tickColor = "#fcd34d"; // Amber-300
+                            else if (i <= 30) tickColor = "#fb923c"; // Orange-400
+                            else tickColor = "#fb7185"; // Rose-400
+                        }
+
+                        return (
+                            <line
+                                key={i}
+                                x1={x1} y1={y1}
+                                x2={x2} y2={y2}
+                                stroke={tickColor}
+                                strokeWidth={isMajor ? 3 : 1.5}
+                                className="transition-colors duration-300"
+                                opacity={i <= adjustedPace ? 1 : 0.2}
+                            />
+                        );
+                    })}
+
+                    {/* 3. The Needles/Arc Progress */}
+                    {/* We draw a path that matches the background track but uses dasharray to fill it */}
+                    <path
+                        d={`M ${CX + R_TRACK * Math.cos(135 * Math.PI / 180)} ${CY + R_TRACK * Math.sin(135 * Math.PI / 180)} A ${R_TRACK} ${R_TRACK} 0 1 1 ${CX + R_TRACK * Math.cos(45 * Math.PI / 180)} ${CY + R_TRACK * Math.sin(45 * Math.PI / 180)}`}
+                        fill="none"
+                        stroke={`url(#gauge-gradient)`}
+                        strokeWidth="6"
+                        strokeLinecap="round"
+                        // Calculation: Arc Length = R * Theta(rad). 270 deg = 4.71 rad. R=140. L ~= 660. 
+                        strokeDasharray={`${(adjustedPace / 45) * 660} 1000`}
+                        className="transition-all duration-500 ease-out"
+                        filter="url(#glow)"
+                        opacity="0.9"
+                    />
                 </svg>
 
-                {/* 3. The Knob (Interactive Visual) */}
-                <motion.div
-                    className="absolute inset-0 rounded-full"
-                    animate={{ rotate: currentRotation }}
-                    transition={{ type: "spring", stiffness: 150, damping: 25, mass: 0.8 }}
-                >
-                    <div className="absolute top-4 left-1/2 -translate-x-1/2 w-8 h-8 flex items-center justify-center">
-                        <div className={cn(
-                            "w-3 h-3 rounded-full transition-all duration-300",
-                            styles.bg,
-                            styles.shadow,
-                            isDragging ? 'scale-125' : 'scale-100',
-                            "shadow-[0_0_15px_currentColor]"
-                        )} />
-                    </div>
-                </motion.div>
-
-                {/* 4. Center Projection (Hero Data) */}
+                {/* 4. Center Projection (The Gauge Hub) */}
                 <div className={cn(
-                    "relative z-10 text-center flex flex-col items-center justify-center w-[240px] h-[240px] rounded-full bg-[#080808] border transition-colors duration-500",
-                    adjustedPace > 30 ? "border-red-900/40 shadow-2xl shadow-red-900/10" : "border-white/[0.02] shadow-2xl shadow-emerald-900/5"
+                    "relative z-10 text-center flex flex-col items-center justify-center w-[240px] h-[240px] rounded-full bg-[#050505] border-2 transition-colors duration-500",
+                    adjustedPace > 30 ? "border-rose-400/30 shadow-[0_0_60px_-10px_rgba(251,113,133,0.2)]" : "border-white/[0.05] shadow-[0_0_60px_-10px_rgba(16,185,129,0.1)]"
                 )}>
                     <motion.div
                         layout
-                        className="text-neutral-500 text-[10px] tracking-[0.2em] uppercase mb-3 font-medium"
+                        className="text-neutral-500 text-xs tracking-[0.25em] uppercase mb-4 font-semibold opacity-60"
                     >
-                        Completion Date
+                        Completion Estimate
                     </motion.div>
 
                     <motion.div
                         key={projection.finishDate.toISOString()}
-                        initial={{ opacity: 0.5, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-5xl font-light tracking-tighter text-white tabular-nums"
+                        initial={{ opacity: 0.5, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className={cn(
+                            "text-7xl font-light tracking-tighter tabular-nums transition-colors duration-300 leading-none mb-2",
+                            styles.text
+                        )}
                     >
                         {format(projection.finishDate, "MMM d")}
                     </motion.div>
 
-                    <div className="text-neutral-600 text-sm mt-2 font-light">
+                    <div className="text-3xl text-neutral-500 font-light tracking-widest">
                         {format(projection.finishDate, "yyyy")}
                     </div>
 
-                    <div className="absolute bottom-8 text-[10px] text-neutral-700 bg-white/[0.02] px-3 py-1 rounded-full border border-white/[0.02]">
-                        ~{Math.ceil(projection.daysNeeded / 30)} MONTHS
+                    {/* Months Badge - Restored & Lightened */}
+                    <div className={cn(
+                        "mt-5 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase border transition-colors",
+                        adjustedPace > 30 ? "bg-rose-400/10 border-rose-400/20 text-rose-400" : "bg-emerald-400/10 border-emerald-400/20 text-emerald-400"
+                    )}>
+                        {Math.ceil(projection.daysNeeded / 30)} Months
                     </div>
                 </div>
             </div>
@@ -215,9 +276,9 @@ export default function DashboardView({
                             </span>
                         </div>
                         <div className="text-right">
-                            <span className={cn("text-2xl font-medium tabular-nums", styles.text)}>{adjustedPace} <span className="text-base font-normal text-neutral-600">lines</span></span>
-                            <div className="text-xs text-neutral-500 font-medium mt-0.5 flex items-center justify-end gap-1">
-                                <Copy className="w-3 h-3" />
+                            <span className={cn("text-4xl font-light tabular-nums tracking-tight", styles.text)}>{adjustedPace} <span className="text-lg font-normal text-neutral-600 ml-1">lines</span></span>
+                            <div className="text-sm text-neutral-500 font-medium mt-1 flex items-center justify-end gap-1.5">
+                                <Copy className="w-4 h-4" />
                                 {pagesPerDay} pages/day
                             </div>
                         </div>
