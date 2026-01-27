@@ -1,5 +1,5 @@
 import React from 'react';
-import { UserSettings, CompletionData } from '@/features/dashboard/types/hafiz';
+import { UserSettings, CompletionData } from '@/features/prototype2/types/hafiz';
 import { Flag, Zap, Calendar, TrendingUp, Layers, ArrowRight, Circle } from 'lucide-react';
 import { motion } from 'framer-motion';
 

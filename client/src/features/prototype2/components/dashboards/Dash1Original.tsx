@@ -1,6 +1,6 @@
 import { CheckCircle2, Circle, Calendar, BookOpen, ArrowRight, Flame, MoreHorizontal, TrendingUp, Flag } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { UserSettings, CompletionData } from '@/features/dashboard/types/hafiz';
+import { UserSettings, CompletionData } from '@/features/prototype2/types/hafiz';
 
 interface Dash1OriginalProps {
     settings: UserSettings;

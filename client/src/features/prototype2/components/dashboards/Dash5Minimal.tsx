@@ -1,5 +1,5 @@
 import React from 'react';
-import { UserSettings, CompletionData } from '@/features/dashboard/types/hafiz';
+import { UserSettings, CompletionData } from '@/features/prototype2/types/hafiz';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

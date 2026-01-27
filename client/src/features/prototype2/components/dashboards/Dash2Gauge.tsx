@@ -1,4 +1,4 @@
-import { UserSettings, CompletionData } from '@/features/dashboard/types/hafiz';
+import { UserSettings, CompletionData } from '@/features/prototype2/types/hafiz';
 import { Card } from '@/components/ui/card';
 import { Circle, TrendingUp, BookOpen, Flame, Calendar, Award, ArrowRight } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';

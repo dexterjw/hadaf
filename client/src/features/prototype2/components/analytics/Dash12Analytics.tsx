@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { UserSettings, CompletionData } from '@/features/dashboard/types/hafiz';
+import { UserSettings, CompletionData } from '@/features/prototype2/types/hafiz';
 import JourneyAnalyticsV1 from './AnalyticsV1';
 import JourneyAnalyticsV2 from './AnalyticsV2';
 import JourneyAnalyticsV3 from './AnalyticsV3';

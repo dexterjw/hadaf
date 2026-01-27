@@ -15,7 +15,7 @@ import Dash11Roadmap from '../analytics/Dash11Roadmap';
 import Dash12Analytics from '../analytics/Dash12Analytics';
 import HafizSettings from '../features/HafizSettings';
 import HafizAICoach from '../features/HafizAICoach';
-import { UserSettings, CompletionData, HafizTab, DEFAULT_SETTINGS } from '@/features/dashboard/types/hafiz';
+import { UserSettings, CompletionData, HafizTab, DEFAULT_SETTINGS } from '@/features/prototype2/types/hafiz';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -55,7 +55,7 @@ export default function DashboardLayout() {
 
     // Navigation function to update URL
     const navigateToTab = (tab: HafizTab) => {
-        setLocation(`/dashboard/${tab}`);
+        setLocation(`/labs/p2/${tab}`);
     };
 
     // Derived state calculations

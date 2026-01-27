@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UserSettings, CompletionData } from '@/features/dashboard/types/hafiz';
+import { UserSettings, CompletionData } from '@/features/prototype2/types/hafiz';
 import { Flag, Zap, Layers, MapPin, Mountain, Navigation, Moon, Star, TrendingUp, CircleDot, Check, ChevronRight, Sparkles, ArrowUpRight, Tornado, Activity, Target } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 

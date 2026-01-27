@@ -1,7 +1,7 @@
 
 import React from 'react';
 import GoalProgressCard from '../cards/GoalProgressCard';
-import { UserSettings, CompletionData } from '@/features/dashboard/types/hafiz';
+import { UserSettings, CompletionData } from '@/features/prototype2/types/hafiz';
 import { Separator } from '@/components/ui/separator';
 
 interface Dash13GoalsProps {

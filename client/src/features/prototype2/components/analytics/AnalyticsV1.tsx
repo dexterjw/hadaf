@@ -10,7 +10,7 @@ import {
     ReferenceLine
 } from 'recharts';
 import { Calendar, Flag, TrendingUp, Zap, ChevronRight } from 'lucide-react';
-import { UserSettings, CompletionData } from '@/features/dashboard/types/hafiz';
+import { UserSettings, CompletionData } from '@/features/prototype2/types/hafiz';
 import { motion } from 'framer-motion';
 
 interface JourneyAnalyticsV1Props {

@@ -1,5 +1,5 @@
 import { LayoutDashboard, TrendingUp, Settings, Sparkles, BookOpen, Search, Gauge, LayoutTemplate, Layers, List, Grid, Heart } from 'lucide-react';
-import { HafizTab } from '@/features/dashboard/types/hafiz';
+import { HafizTab } from '@/features/prototype2/types/hafiz';
 import {
     Sidebar,
     SidebarContent,

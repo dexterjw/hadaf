@@ -1,5 +1,5 @@
 import React from 'react';
-import { UserSettings, CompletionData } from '@/features/dashboard/types/hafiz';
+import { UserSettings, CompletionData } from '@/features/prototype2/types/hafiz';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -20,12 +20,12 @@ import {
 } from 'lucide-react';
 import { WeeklyHeatmap } from '../charts/WeeklyHeatmap';
 
-interface Dash3CompactProps {
+interface HafizDashboardFourProps {
     settings: UserSettings;
     stats: CompletionData;
 }
 
-export default function Dash3Compact({ settings, stats }: Dash3CompactProps) {
+export default function Dash4Expanded({ settings, stats }: HafizDashboardFourProps) {
     // Mock Data for UI
     const streak = 18;
     const bestStreak = 45;
@@ -45,19 +45,56 @@ export default function Dash3Compact({ settings, stats }: Dash3CompactProps) {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-bold tracking-tight">{settings.name}</h1>
-                    <p className="text-muted-foreground">Keep up the excellent work!</p>
+                    <p className="text-muted-foreground">Variation 1: Focus on Consistency</p>
                 </div>
                 <div className="flex items-center gap-4">
-                    <Badge variant="outline" className="px-3 py-1 bg-green-500/10 text-green-500 border-green-500/20 gap-2">
+                    <Badge variant="outline" className="px-3 py-1 bg-teal-500/10 text-teal-500 border-teal-500/20 gap-2">
                         <Award size={14} />
                         Strong Hifdh Health
                     </Badge>
-                    <Badge variant="outline" className="px-3 py-1 bg-orange-500/10 text-orange-500 border-orange-500/20 gap-2">
+                    <Badge variant="outline" className="px-3 py-1 bg-pink-500/10 text-pink-500 border-pink-500/20 gap-2">
                         <Flame size={14} />
                         {streak} Day Streak
                     </Badge>
                 </div>
             </div>
+
+            {/* MOVED: CONSISTENCY & STREAK to TOP */}
+            <section>
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <Card className="lg:col-span-1 border-teal-500/20">
+                        <CardHeader>
+                            <CardTitle>Consistency Stats</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 bg-pink-500/10 rounded-full text-pink-500">
+                                    <Flame size={24} />
+                                </div>
+                                <div>
+                                    <div className="text-2xl font-bold">{streak} Days</div>
+                                    <div className="text-xs text-muted-foreground">Current Streak</div>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 bg-teal-500/10 rounded-full text-teal-500">
+                                    <Award size={24} />
+                                </div>
+                                <div>
+                                    <div className="text-2xl font-bold">{bestStreak} Days</div>
+                                    <div className="text-xs text-muted-foreground">All-time Best</div>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <div className="lg:col-span-3 h-full">
+                        <WeeklyHeatmap data={heatmapData} />
+                    </div>
+                </div>
+            </section>
+
+            <Separator />
 
             {/* 2. TODAY’S FOCUS (Hero Section) */}
             <section>
@@ -67,7 +104,7 @@ export default function Dash3Compact({ settings, stats }: Dash3CompactProps) {
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Sabak */}
-                    <Card className="border-l-4 border-l-primary shadow-sm hover:shadow-md transition-all">
+                    <Card className="border-t-4 border-t-primary shadow-sm hover:shadow-md transition-all">
                         <CardHeader className="pb-2">
                             <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Sabak (New Lesson)</CardTitle>
                         </CardHeader>
@@ -88,7 +125,7 @@ export default function Dash3Compact({ settings, stats }: Dash3CompactProps) {
                     </Card>
 
                     {/* Dour */}
-                    <Card className="border-l-4 border-l-blue-500 shadow-sm hover:shadow-md transition-all">
+                    <Card className="border-t-4 border-t-blue-500 shadow-sm hover:shadow-md transition-all">
                         <CardHeader className="pb-2">
                             <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Dour (Recent Revision)</CardTitle>
                         </CardHeader>
@@ -110,7 +147,7 @@ export default function Dash3Compact({ settings, stats }: Dash3CompactProps) {
                     </Card>
 
                     {/* Manzil */}
-                    <Card className="border-l-4 border-l-purple-500 shadow-sm hover:shadow-md transition-all">
+                    <Card className="border-t-4 border-t-purple-500 shadow-sm hover:shadow-md transition-all">
                         <CardHeader className="pb-2">
                             <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Manzil (Long-term)</CardTitle>
                         </CardHeader>
@@ -130,50 +167,6 @@ export default function Dash3Compact({ settings, stats }: Dash3CompactProps) {
                         </CardContent>
                     </Card>
                 </div>
-
-                <div className="mt-6 flex justify-end">
-                    <Button size="lg" className="gap-2" disabled={true}>
-                        <CheckCircle2 size={18} />
-                        Mark Day Complete
-                    </Button>
-                </div>
-            </section>
-
-            <Separator />
-
-            {/* 3. CONSISTENCY & STREAK */}
-            <section>
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                    <Card className="lg:col-span-1">
-                        <CardHeader>
-                            <CardTitle>Consistency Stats</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div className="flex items-center gap-4">
-                                <div className="p-3 bg-orange-500/10 rounded-full text-orange-500">
-                                    <Flame size={24} />
-                                </div>
-                                <div>
-                                    <div className="text-2xl font-bold">{streak} Days</div>
-                                    <div className="text-xs text-muted-foreground">Current Streak</div>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <div className="p-3 bg-blue-500/10 rounded-full text-blue-500">
-                                    <Award size={24} />
-                                </div>
-                                <div>
-                                    <div className="text-2xl font-bold">{bestStreak} Days</div>
-                                    <div className="text-xs text-muted-foreground">All-time Best</div>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <div className="lg:col-span-3 h-full">
-                        <WeeklyHeatmap data={heatmapData} />
-                    </div>
-                </div>
             </section>
 
             {/* 4. WEEKLY TARGETS */}
@@ -184,7 +177,7 @@ export default function Dash3Compact({ settings, stats }: Dash3CompactProps) {
                 </h2>
                 <Card>
                     <CardContent className="pt-6">
-                        <div className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div className="space-y-2">
                                 <div className="flex justify-between text-sm">
                                     <span className="font-medium">Sabak Target</span>
@@ -212,49 +205,7 @@ export default function Dash3Compact({ settings, stats }: Dash3CompactProps) {
             </section>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* 5. DOUR QUALITY TRACKER */}
-                <section>
-                    <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                        <span className="bg-primary/10 p-1.5 rounded-md text-primary"><TrendingUp size={16} /></span>
-                        Dour Quality
-                    </h2>
-                    <Card className="h-full">
-                        <CardHeader>
-                            <CardTitle className="text-base">Quality Insights</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div className="flex items-center justify-between p-4 bg-muted/40 rounded-lg">
-                                <div>
-                                    <div className="text-sm text-muted-foreground">Consistency Score</div>
-                                    <div className="text-2xl font-bold text-green-500">92%</div>
-                                </div>
-                                <div className="text-green-500 flex flex-col items-center">
-                                    <TrendingUp size={20} />
-                                    <span className="text-xs">Improving</span>
-                                </div>
-                            </div>
-
-                            <div>
-                                <div className="text-sm font-medium mb-3 flex items-center gap-2">
-                                    <AlertCircle size={14} className="text-red-500" />
-                                    Weak Areas (Needs Attention)
-                                </div>
-                                <div className="space-y-2">
-                                    <div className="flex items-center justify-between text-sm p-2 rounded-md border border-red-500/20 bg-red-500/5">
-                                        <span>Surah Al-Mursalat</span>
-                                        <Badge variant="outline" className="text-red-500 border-red-500/30 text-[10px]">Hesitation</Badge>
-                                    </div>
-                                    <div className="flex items-center justify-between text-sm p-2 rounded-md border border-yellow-500/20 bg-yellow-500/5">
-                                        <span>Juz 28, Page 544</span>
-                                        <Badge variant="outline" className="text-yellow-500 border-yellow-500/30 text-[10px]">Minor Errors</Badge>
-                                    </div>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </section>
-
-                {/* 6. MANZIL COVERAGE */}
+                {/* 6. MANZIL COVERAGE - SWAPPED ORDER */}
                 <section>
                     <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                         <span className="bg-primary/10 p-1.5 rounded-md text-primary"><BookOpen size={16} /></span>
@@ -269,8 +220,8 @@ export default function Dash3Compact({ settings, stats }: Dash3CompactProps) {
                                 {Array.from({ length: 30 }, (_, i) => i + 1).map((juz) => {
                                     /* Random logic for demo */
                                     let color = "bg-muted text-muted-foreground";
-                                    if (juz >= 28) color = "bg-green-500 text-white"; // Recent
-                                    if (juz === 15) color = "bg-red-500 text-white"; // Overdue
+                                    if (juz >= 28) color = "bg-teal-500 text-white"; // Recent
+                                    if (juz === 15) color = "bg-pink-500 text-white"; // Overdue
                                     if (juz === 16) color = "bg-yellow-500 text-white"; // Due soon
 
                                     return (
@@ -298,35 +249,49 @@ export default function Dash3Compact({ settings, stats }: Dash3CompactProps) {
                         </CardContent>
                     </Card>
                 </section>
-            </div>
 
-            {/* 7. ACTIVITY LOG */}
-            <section>
-                <h2 className="text-lg font-semibold mb-4">Recent Activity</h2>
-                <Card>
-                    <CardContent className="p-0">
-                        <div className="divide-y">
-                            {[
-                                { time: "10:30 AM", title: "Completed Sabak", desc: "Surah An-Naba, Ayah 1-15", type: "sabak" },
-                                { time: "09:15 AM", title: "Dour Marked", desc: "Surah Al-Mulk - Needs Work", type: "dour" },
-                                { time: "Yesterday", title: "Missed Manzil", desc: "Target was Juz 28", type: "missed" }
-                            ].map((activity, i) => (
-                                <div key={i} className="flex items-center p-4 gap-4 hover:bg-muted/50 transition-colors">
-                                    <div className="text-xs text-muted-foreground w-16 font-mono">{activity.time}</div>
-                                    <div className={`w-2 h-2 rounded-full ${activity.type === 'missed' ? 'bg-red-500' : 'bg-primary'}`} />
-                                    <div className="flex-1">
-                                        <div className="text-sm font-medium">{activity.title}</div>
-                                        <div className="text-xs text-muted-foreground">{activity.desc}</div>
-                                    </div>
-                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
-                                        <Minus size={14} />
-                                    </Button>
+                {/* 5. DOUR QUALITY TRACKER */}
+                <section>
+                    <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                        <span className="bg-primary/10 p-1.5 rounded-md text-primary"><TrendingUp size={16} /></span>
+                        Dour Quality
+                    </h2>
+                    <Card className="h-full">
+                        <CardHeader>
+                            <CardTitle className="text-base">Quality Insights</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="flex items-center justify-between p-4 bg-muted/40 rounded-lg">
+                                <div>
+                                    <div className="text-sm text-muted-foreground">Consistency Score</div>
+                                    <div className="text-2xl font-bold text-teal-500">92%</div>
                                 </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-            </section>
+                                <div className="text-teal-500 flex flex-col items-center">
+                                    <TrendingUp size={20} />
+                                    <span className="text-xs">Improving</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div className="text-sm font-medium mb-3 flex items-center gap-2">
+                                    <AlertCircle size={14} className="text-pink-500" />
+                                    Weak Areas (Needs Attention)
+                                </div>
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between text-sm p-2 rounded-md border border-pink-500/20 bg-pink-500/5">
+                                        <span>Surah Al-Mursalat</span>
+                                        <Badge variant="outline" className="text-pink-500 border-pink-500/30 text-[10px]">Hesitation</Badge>
+                                    </div>
+                                    <div className="flex items-center justify-between text-sm p-2 rounded-md border border-yellow-500/20 bg-yellow-500/5">
+                                        <span>Juz 28, Page 544</span>
+                                        <Badge variant="outline" className="text-yellow-500 border-yellow-500/30 text-[10px]">Minor Errors</Badge>
+                                    </div>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </section>
+            </div>
         </div>
     );
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Save, User, Book, Calendar } from 'lucide-react';
-import { UserSettings } from '@/features/dashboard/types/hafiz';
+import { UserSettings } from '@/features/prototype2/types/hafiz';
 
 interface HafizSettingsProps {
     settings: UserSettings;

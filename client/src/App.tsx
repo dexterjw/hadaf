@@ -11,7 +11,6 @@ import {
   LogProgressPage,
   Prototype2Page,
   Prototype3Page,
-  DashboardPage,
 } from "@/pages";
 
 function Router() {
@@ -25,8 +24,8 @@ function Router() {
       <Route path="/labs/p2" component={Prototype2Page} />
       <Route path="/labs/p3" component={Prototype3Page} />
 
-      {/* Dashboard system (separate from prototypes) */}
-      <Route path="/dashboard/:tab?" component={DashboardPage} />
+      {/* Prototype 2 with Dashboard system */}
+      <Route path="/labs/p2/:tab?" component={Prototype2Page} />
 
       {/* Redirect root to labs/p1 */}
       <Route path="/">

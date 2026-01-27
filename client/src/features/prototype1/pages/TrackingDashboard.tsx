@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { StreakCard } from "@/features/dashboard/components/cards/StreakCard";
-import { WeeklyHeatmap } from "@/features/dashboard/components/charts/WeeklyHeatmap";
-import { VelocityGraph } from "@/features/dashboard/components/charts/VelocityGraph";
-import { CumulativeGrowth } from "@/features/dashboard/components/charts/CumulativeGrowth";
+import { StreakCard } from "@/features/prototype2/components/cards/StreakCard";
+import { WeeklyHeatmap } from "@/features/prototype2/components/charts/WeeklyHeatmap";
+import { VelocityGraph } from "@/features/prototype2/components/charts/VelocityGraph";
+import { CumulativeGrowth } from "@/features/prototype2/components/charts/CumulativeGrowth";
 import { DayAtAGlance } from "@/features/prototype1/components/sections/DayAtAGlance";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Share2 } from "lucide-react";
