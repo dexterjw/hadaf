@@ -1,9 +1,37 @@
 import { Link } from "wouter";
 import { ArrowRight, Sparkles, Rocket, Zap, FlaskConical } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useMotionTemplate, useMotionValue, useSpring } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useEffect } from "react";
 
 export default function LabsPage() {
+    const mouseX = useMotionValue(0);
+    const mouseY = useMotionValue(0);
+
+    // Smooth spring animation for the cursor follower
+    const springConfig = { damping: 25, stiffness: 150, mass: 0.5 };
+    const springX = useSpring(mouseX, springConfig);
+    const springY = useSpring(mouseY, springConfig);
+
+    useEffect(() => {
+        const handleMouseMove = (e: MouseEvent) => {
+            mouseX.set(e.clientX);
+            mouseY.set(e.clientY);
+        };
+
+        window.addEventListener("mousemove", handleMouseMove);
+        return () => window.removeEventListener("mousemove", handleMouseMove);
+    }, []);
+
+    // Dynamic gradient background based on mouse position
+    const backgroundStyle = useMotionTemplate`
+        radial-gradient(
+            600px circle at ${springX}px ${springY}px,
+            rgba(255, 255, 255, 0.03),
+            transparent 80%
+        )
+    `;
+
     const prototypes = [
         {
             id: "p1",
@@ -39,6 +67,12 @@ export default function LabsPage() {
         <div className="min-h-screen bg-[#050505] text-white flex flex-col relative overflow-hidden font-['Space_Grotesk'] selection:bg-white/20">
             {/* Elegant, restrained background */}
             <div className="fixed inset-0 pointer-events-none">
+                {/* Mouse Follower Spotlight */}
+                <motion.div
+                    className="absolute inset-0 z-0 opacity-100 mix-blend-soft-light"
+                    style={{ background: backgroundStyle }}
+                />
+
                 {/* Very subtle top glow */}
                 <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[60%] h-[500px] bg-white/[0.03] blur-[150px] rounded-full" />
 
