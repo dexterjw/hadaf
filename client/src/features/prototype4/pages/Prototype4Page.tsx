@@ -7,10 +7,11 @@ import { AnimatePresence } from "framer-motion";
 import WizardView from "../components/WizardView";
 import DashboardView from "../components/DashboardView";
 import { calculateProjection } from "../utils";
-import { StudentData } from "../types";
+import { StudentData, VelocityMatrix, DEFAULT_VELOCITY_MATRIX } from "../types";
 
 export default function Prototype4Page() {
     const [step, setStep] = useState<"wizard" | "dashboard">("wizard");
+
     const [studentData, setStudentData] = useState<StudentData>({
         quranStandard: 15,
         currentJuz: 1,
@@ -18,20 +19,25 @@ export default function Prototype4Page() {
         avgLinesPerDay: 5,
         daysPerWeek: 5,
     });
-    const [adjustedPace, setAdjustedPace] = useState(5);
 
+    const [adjustedPace, setAdjustedPace] = useState(5);
+    const [velocityMatrix, setVelocityMatrix] = useState<VelocityMatrix>(DEFAULT_VELOCITY_MATRIX);
+
+    // Base projection (from wizard inputs, used for delta calculation)
     const baseProjection = useMemo(
-        () => calculateProjection(studentData, studentData.avgLinesPerDay),
+        () => calculateProjection(studentData, studentData.avgLinesPerDay, DEFAULT_VELOCITY_MATRIX),
         [studentData]
     );
 
+    // Adjusted projection (from slider and velocity matrix)
     const adjustedProjection = useMemo(
-        () => calculateProjection(studentData, adjustedPace),
-        [studentData, adjustedPace]
+        () => calculateProjection(studentData, adjustedPace, velocityMatrix),
+        [studentData, adjustedPace, velocityMatrix]
     );
 
     const handleCalculate = () => {
         setAdjustedPace(studentData.avgLinesPerDay);
+        setVelocityMatrix(DEFAULT_VELOCITY_MATRIX);
         setStep("dashboard");
     };
 
@@ -45,11 +51,12 @@ export default function Prototype4Page() {
             daysPerWeek: 5,
         });
         setAdjustedPace(5);
+        setVelocityMatrix(DEFAULT_VELOCITY_MATRIX);
     };
 
     return (
         <div className="min-h-screen bg-[#050505] text-white flex flex-col relative overflow-hidden font-['Space_Grotesk'] selection:bg-cyan-500/30">
-            {/* Background effects specific to P4 */}
+            {/* Background effects */}
             <div className="fixed inset-0 pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-cyan-500/5 rounded-full blur-[120px]" />
                 <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 rounded-full blur-[120px]" />
@@ -60,7 +67,7 @@ export default function Prototype4Page() {
             </div>
 
             {/* Header */}
-            <header className="relative z-10 p-8 flex justify-between items-center">
+            <header className="relative z-10 p-6 md:p-8 flex justify-between items-center">
                 <Link href="/labs">
                     <Button variant="ghost" size="sm" className="gap-2 text-neutral-400 hover:text-white hover:bg-white/5 transition-colors">
                         <ArrowLeft className="w-4 h-4" />
@@ -73,7 +80,7 @@ export default function Prototype4Page() {
             </header>
 
             {/* Main content */}
-            <main className="flex-1 flex items-center justify-center px-4 py-8 relative z-10">
+            <main className="flex-1 flex items-start justify-center px-4 py-8 relative z-10 overflow-y-auto">
                 <AnimatePresence mode="wait">
                     {step === "wizard" ? (
                         <WizardView
@@ -86,10 +93,13 @@ export default function Prototype4Page() {
                         <DashboardView
                             key="dashboard"
                             projection={adjustedProjection}
-                            baseDaysNeeded={baseProjection.daysNeeded}
+                            baseProjection={baseProjection}
                             adjustedPace={adjustedPace}
                             setAdjustedPace={setAdjustedPace}
+                            velocityMatrix={velocityMatrix}
+                            setVelocityMatrix={setVelocityMatrix}
                             onReset={handleReset}
+                            studentData={studentData}
                         />
                     )}
                 </AnimatePresence>

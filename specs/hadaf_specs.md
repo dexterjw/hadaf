@@ -88,22 +88,25 @@
 
 **Functional Requirements (FR):**
 
-* **FR-12 Customizable Matrix:** Allow user to define the duration split and intensity of the three memorization phases.
+* **FR-12 Customizable Matrix:** Allow user to define the Juz allocation and learning pace (lines/day) of the three memorization phases.
 
 **UI Specifications:**
 
 * **Location:** Collapsible section or Modal labeled "Velocity Matrix".  
 * **Controls:**  
   * **Phase 1: Warm-up**  
-    * *Duration:* Slider/Input (Default: 10% of remaining lines).  
-    * *Intensity:* Slider/Input (Default: 80% of base pace).  
+    * *Duration:* Slider/Input for number of Juz (Default: 3 Juz).  
+    * *Intensity:* Slider/Input for lines per day (Default: 5 lines/day).  
   * **Phase 2: Flow State**  
-    * *Duration:* Slider/Input (Default: 60% of remaining lines).  
-    * *Intensity:* Slider/Input (Default: 100% of base pace).  
+    * *Duration:* Slider/Input for number of Juz (Default: 18 Juz).  
+    * *Intensity:* Slider/Input for lines per day (Default: 10 lines/day).  
   * **Phase 3: Acceleration**  
-    * *Duration:* Auto-calculated (Remainder of 100%).  
-    * *Intensity:* Slider/Input (Default: 115% of base pace).  
-* **Validation:** Ensure Duration percentages sum to 100%.
+    * *Duration:* Slider/Input for number of Juz (Default: 9 Juz).  
+    * *Intensity:* Slider/Input for lines per day (Default: 15 lines/day).  
+* **Validation:**  
+  * Ensure total Juz across all phases sum to exactly 30.  
+  * Ensure phase names remain semantically consistent with their intensity values (e.g., Warm-up should have lower lines/day than Acceleration).  
+  * Ensure phases don't overlap in the timeline (sequential progression from Phase 1 → Phase 2 → Phase 3).
 
 ### **3.6 Logic Integration (Advanced Simulation)**
 
