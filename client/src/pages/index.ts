@@ -8,6 +8,8 @@ export { default as Prototype3Page } from '@/features/prototype3/pages/Prototype
 export { default as Prototype4Page } from '@/features/prototype4/pages/Prototype4Page';
 export { default as Prototype5Page } from '@/features/prototype5/pages/Prototype5Page';
 export { default as Prototype6Page } from '@/features/prototype6/pages/Prototype6Page';
+export { default as Prototype7Page } from '@/features/prototype7/pages/Prototype7Page';
+export { default as Prototype8Page } from '@/features/prototype8/pages/Prototype8Page';
 
 // Utility pages
 export { default as NotFoundPage } from './NotFoundPage';

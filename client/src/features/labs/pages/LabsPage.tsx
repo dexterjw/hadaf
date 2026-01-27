@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { ArrowRight, Sparkles, Rocket, Zap, FlaskConical, Activity, Disc, Type } from "lucide-react";
+import { ArrowRight, Sparkles, Rocket, Zap, FlaskConical, Activity, Disc, Type, Layers, LineChart } from "lucide-react";
 import { motion, useMotionTemplate, useMotionValue, useSpring } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useEffect } from "react";
@@ -87,6 +87,24 @@ export default function LabsPage() {
             icon: Type,
             route: "/labs/p6",
             neonColor: "from-neutral-500/10 to-white/10",
+        },
+        {
+            id: "p7",
+            name: "Hadaf Prototype 7",
+            description: "Integrated full-spec with velocity matrix, holiday manager, and phased learning.",
+            status: "In Development",
+            icon: Layers,
+            route: "/labs/p7",
+            neonColor: "from-emerald-500/10 to-teal-500/10",
+        },
+        {
+            id: "p8",
+            name: "Hadaf Prototype 8",
+            description: "Visual timeline focus with prominent progress chart and streamlined controls.",
+            status: "In Development",
+            icon: LineChart,
+            route: "/labs/p8",
+            neonColor: "from-sky-500/10 to-indigo-500/10",
         },
     ];
 
