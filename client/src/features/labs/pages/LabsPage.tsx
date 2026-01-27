@@ -54,9 +54,9 @@ export default function LabsPage() {
         },
         {
             id: "p3",
-            name: "Project: Void",
-            description: "Experimental interface for distraction-free deep work sessions.",
-            status: "Planned",
+            name: "Hadaf Prototype 3",
+            description: "Dynamic forecasting calculator with pace simulation for memorization planning.",
+            status: "In Development",
             icon: Zap,
             route: "/labs/p3",
             neonColor: "from-fuchsia-500/10 to-pink-500/10",
@@ -112,7 +112,7 @@ export default function LabsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-7xl">
                     {prototypes.map((prototype, index) => {
                         const Icon = prototype.icon;
-                        const isLive = prototype.status === "Live";
+                        const isActive = prototype.status === "Live" || prototype.status === "In Development";
 
                         return (
                             <motion.div
@@ -130,13 +130,13 @@ export default function LabsPage() {
                                     href={prototype.route}
                                     className={cn(
                                         "relative block h-full overflow-hidden rounded-[24px] bg-[#0a0a0a] border border-white/[0.04] transition-all duration-700 ease-out",
-                                        isLive
+                                        isActive
                                             ? "hover:border-white/[0.12] hover:bg-[#0c0c0c] cursor-pointer"
                                             : "opacity-40 cursor-not-allowed border-transparent bg-transparent"
                                     )}
                                 >
                                     {/* Ultra-subtle spotlight gradient */}
-                                    {isLive && (
+                                    {isActive && (
                                         <div
                                             className={cn(
                                                 "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 bg-gradient-to-tr",
@@ -151,7 +151,7 @@ export default function LabsPage() {
                                             <div className="flex items-center justify-between">
                                                 <div className={cn(
                                                     "p-3 rounded-full border transition-all duration-500",
-                                                    isLive
+                                                    isActive
                                                         ? "bg-white/[0.03] border-white/[0.06] group-hover:border-white/[0.1] text-white/80"
                                                         : "bg-transparent border-transparent text-neutral-700"
                                                 )}>
@@ -162,10 +162,11 @@ export default function LabsPage() {
                                                 <div className="flex items-center gap-2">
                                                     <span className={cn(
                                                         "w-1.5 h-1.5 rounded-full transition-colors duration-500",
-                                                        isLive ? "bg-emerald-500/50 group-hover:bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.2)]" : "bg-neutral-800"
+                                                        prototype.status === "Live" ? "bg-emerald-500/50 group-hover:bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.2)]" :
+                                                            prototype.status === "In Development" ? "bg-amber-500/50 group-hover:bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.2)]" : "bg-neutral-800"
                                                     )} />
                                                     <span className="text-[10px] uppercase tracking-[0.2em] text-neutral-600 font-medium">
-                                                        {isLive ? "Live" : "Soon"}
+                                                        {prototype.status === "Live" ? "Live" : prototype.status === "In Development" ? "Dev" : "Soon"}
                                                     </span>
                                                 </div>
                                             </div>
