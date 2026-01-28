@@ -6,7 +6,18 @@
 
 **Persona:** Parent/Prototyper modeling scenarios for a student.
 
-## **2\. Core User Flow**
+## **2\. Journey Milestones (Marhala)**
+
+The entire memorization journey is structured around three key milestones, each called a **Marhala**:
+
+* **Marhala 1 - The Foundation:** Juz 1 to 10  
+  * Focus on building the foundation of memorization techniques and habits.
+* **Marhala 2 - The Momentum:** Juz 11 to 20  
+  * Building consistent momentum and increased capacity.
+* **Marhala 3 - The Mastery:** Juz 21 to 30  
+  * Achieving mastery and completing the final stretch.
+
+## **3\. Core User Flow**
 
 1. **Wizard:** User inputs baseline data (Script, Progress, Capacity).  
 2. **Dashboard:** User views forecast and experiments with the "Pace Slider".  
