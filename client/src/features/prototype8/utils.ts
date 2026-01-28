@@ -27,6 +27,11 @@ export interface ProjectionResult {
     chartData: ChartDataPoint[];
     breakPeriods: { name: string; startDate: Date; endDate: Date }[];
     estimatedMonths: number;
+    milestones?: {
+        marhala1: Date;
+        marhala2: Date;
+        marhala3: Date;
+    };
 }
 
 /**
@@ -192,6 +197,11 @@ export function calculateProjection(
         chartData,
         breakPeriods,
         estimatedMonths: Math.ceil(dayCount / 30),
+        milestones: {
+            marhala1: chartData.find(d => d.juz >= 10)?.date || currentDate,
+            marhala2: chartData.find(d => d.juz >= 20)?.date || currentDate,
+            marhala3: currentDate // Finish date matches completion of Juz 30
+        }
     };
 }
 
