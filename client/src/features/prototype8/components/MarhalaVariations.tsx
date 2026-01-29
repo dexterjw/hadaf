@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import {
     Flag, Trophy, Target, ArrowRight, BookOpen, Layers,
     Zap, Award, Calendar, ChevronRight, Play,
-    ChevronDown, ChevronUp
+    ChevronDown, ChevronUp, Menu, X, LayoutGrid, CalendarDays
 } from "lucide-react";
 
 interface MarhalaVariationsProps {
@@ -115,19 +115,18 @@ const filterVisibleMilestones = (
 };
 
 export default function MarhalaVariations({ dates, today }: MarhalaVariationsProps) {
-    const [activeVariation, setActiveVariation] = useState<string>("v1");
+    const [viewMode, setViewMode] = useState<"default" | "timeline">("default");
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [sidebarVariation, setSidebarVariation] = useState<string | null>(null);
 
-    const variations = [
-        { id: "v1", name: "Variation 1: Vertical Steps", component: VerticalSteps },
-        { id: "v2", name: "Variation 2: Bento Grid", component: BentoGrid },
-        { id: "v3", name: "Variation 3: The Ledger", component: CompactStack },
-        { id: "v4", name: "Variation 4: The Journey", component: ZigZagPath },
-        { id: "v6", name: "Variation 6: The Pulse", component: ThePulse },
-        { id: "v8", name: "Variation 8: The Stream", component: TheStream },
-        { id: "v10", name: "Variation 10: The Horizon", component: TheHorizon },
+    // Sidebar variations (hidden by default)
+    const sidebarVariations = [
+        { id: "v2", name: "Bento Grid", subtitle: "Variation 2", component: BentoGrid },
+        { id: "v3", name: "The Ledger", subtitle: "Variation 3", component: CompactStack },
+        { id: "v4", name: "The Journey", subtitle: "Variation 4", component: ZigZagPath },
+        { id: "v6", name: "The Pulse", subtitle: "Variation 6", component: ThePulse },
+        { id: "v8", name: "The Stream", subtitle: "Variation 8", component: TheStream },
     ];
-
-    const ActiveComponent = variations.find(v => v.id === activeVariation)?.component || VerticalSteps;
 
     // Calculate durations
     const m1Dur = Math.max(1, differenceInDays(dates.marhala1, today));
@@ -137,33 +136,176 @@ export default function MarhalaVariations({ dates, today }: MarhalaVariationsPro
 
     const durations = { m1: m1Dur, m2: m2Dur, m3: m3Dur, total: totalDur };
 
+    // Determine which component to render
+    const getActiveComponent = () => {
+        // If sidebar variation is selected, show it
+        if (sidebarVariation) {
+            return sidebarVariations.find(v => v.id === sidebarVariation)?.component || VerticalSteps;
+        }
+        // Otherwise, show based on view mode
+        return viewMode === "timeline" ? TheHorizon : VerticalSteps;
+    };
+
+    const ActiveComponent = getActiveComponent();
+
+    const handleSidebarVariationClick = (variationId: string) => {
+        setSidebarVariation(variationId);
+        setSidebarOpen(false);
+    };
+
+    const getCurrentViewName = () => {
+        if (sidebarVariation) {
+            return sidebarVariations.find(v => v.id === sidebarVariation)?.name || "Default";
+        }
+        return viewMode === "timeline" ? "The Horizon" : "Vertical Steps";
+    };
+
     return (
-        <div className="flex flex-col h-full bg-[#030303] text-white overflow-hidden">
-            {/* Variation Switcher Header */}
-            <div className="flex items-center gap-2 p-4 border-b border-neutral-800/50 bg-[#030303]/80 backdrop-blur-sm z-50 overflow-x-auto no-scrollbar">
-                <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest mr-2 whitespace-nowrap">
-                    EXPLORE DESIGNS:
-                </span>
-                {variations.map(v => (
+        <div className="flex flex-col h-full bg-[#030303] text-white overflow-hidden relative">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-neutral-800/50 bg-[#030303]/80 backdrop-blur-sm z-50">
+                {/* Left: Sidebar Toggle */}
+                <button
+                    onClick={() => setSidebarOpen(!sidebarOpen)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 transition-all"
+                >
+                    <Menu className="w-4 h-4" />
+                    <span className="text-xs font-medium hidden sm:inline">More Variations</span>
+                </button>
+
+                {/* Center: Current View Name */}
+                <div className="flex items-center gap-2">
+                    <div className="text-xs text-neutral-500 uppercase tracking-widest">Current:</div>
+                    <div className="text-sm font-medium text-white">{getCurrentViewName()}</div>
+                </div>
+
+                {/* Right: View Mode Toggle */}
+                <div className="flex items-center gap-2 bg-neutral-900 border border-neutral-800 rounded-lg p-1">
                     <button
-                        key={v.id}
-                        onClick={() => setActiveVariation(v.id)}
+                        onClick={() => {
+                            setViewMode("default");
+                            setSidebarVariation(null);
+                        }}
                         className={cn(
-                            "px-4 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all",
-                            activeVariation === v.id
+                            "flex items-center gap-2 px-4 py-1.5 rounded-md text-xs font-medium transition-all",
+                            viewMode === "default" && !sidebarVariation
                                 ? "bg-white text-black"
-                                : "bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white"
+                                : "text-neutral-400 hover:text-white"
                         )}
                     >
-                        {v.name}
+                        <LayoutGrid className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">Default</span>
                     </button>
-                ))}
+                    <button
+                        onClick={() => {
+                            setViewMode("timeline");
+                            setSidebarVariation(null);
+                        }}
+                        className={cn(
+                            "flex items-center gap-2 px-4 py-1.5 rounded-md text-xs font-medium transition-all",
+                            viewMode === "timeline" && !sidebarVariation
+                                ? "bg-white text-black"
+                                : "text-neutral-400 hover:text-white"
+                        )}
+                    >
+                        <CalendarDays className="w-3.5 h-3.5" />
+                        <span className="hidden sm:inline">Timeline</span>
+                    </button>
+                </div>
             </div>
 
-            {/* Design Canvas */}
-            <div className="flex-1 relative overflow-y-auto">
+            {/* Sidebar */}
+            <AnimatePresence>
+                {sidebarOpen && (
+                    <>
+                        {/* Backdrop */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setSidebarOpen(false)}
+                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+                        />
+
+                        {/* Sidebar Panel */}
+                        <motion.div
+                            initial={{ x: -320 }}
+                            animate={{ x: 0 }}
+                            exit={{ x: -320 }}
+                            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                            className="fixed left-0 top-0 bottom-0 w-80 bg-neutral-900/95 backdrop-blur-xl border-r border-neutral-800 z-50 flex flex-col"
+                        >
+                            {/* Sidebar Header */}
+                            <div className="flex items-center justify-between p-6 border-b border-neutral-800">
+                                <div>
+                                    <h3 className="text-lg font-light text-white">More Variations</h3>
+                                    <p className="text-xs text-neutral-500 mt-1">Explore alternative designs</p>
+                                </div>
+                                <button
+                                    onClick={() => setSidebarOpen(false)}
+                                    className="p-2 rounded-lg hover:bg-neutral-800 transition-colors"
+                                >
+                                    <X className="w-5 h-5 text-neutral-400" />
+                                </button>
+                            </div>
+
+                            {/* Sidebar Content */}
+                            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+                                {sidebarVariations.map((variation) => (
+                                    <button
+                                        key={variation.id}
+                                        onClick={() => handleSidebarVariationClick(variation.id)}
+                                        className={cn(
+                                            "w-full text-left p-4 rounded-xl border transition-all group",
+                                            sidebarVariation === variation.id
+                                                ? "bg-white/10 border-white/20 shadow-lg"
+                                                : "bg-neutral-800/30 border-neutral-800 hover:bg-neutral-800/50 hover:border-neutral-700"
+                                        )}
+                                    >
+                                        <div className="flex items-start justify-between">
+                                            <div>
+                                                <div className={cn(
+                                                    "text-sm font-medium mb-1 transition-colors",
+                                                    sidebarVariation === variation.id ? "text-white" : "text-neutral-300 group-hover:text-white"
+                                                )}>
+                                                    {variation.name}
+                                                </div>
+                                                <div className="text-xs text-neutral-500">
+                                                    {variation.subtitle}
+                                                </div>
+                                            </div>
+                                            <ChevronRight className={cn(
+                                                "w-4 h-4 transition-all",
+                                                sidebarVariation === variation.id
+                                                    ? "text-white opacity-100"
+                                                    : "text-neutral-600 opacity-0 group-hover:opacity-100"
+                                            )} />
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* Sidebar Footer */}
+                            <div className="p-6 border-t border-neutral-800">
+                                <div className="text-xs text-neutral-500 text-center">
+                                    Select a variation to explore different visualization styles
+                                </div>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
+
+            {/* Main Content */}
+            <motion.div
+                key={sidebarVariation || viewMode}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="flex-1 relative overflow-y-auto"
+            >
                 <ActiveComponent dates={dates} durations={durations} today={today} />
-            </div>
+            </motion.div>
         </div>
     );
 }

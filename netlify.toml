@@ -1,0 +1,36 @@
+[build]
+  # Build command from package.json
+  command = "npm run build"
+  
+  # Directory where your static files are published after build
+  publish = "dist/public"
+  
+  # Functions directory (if using Netlify Functions)
+  # functions = "netlify/functions"
+
+[build.environment]
+  # Set Node version
+  NODE_VERSION = "20"
+  
+  # Set production environment
+  NODE_ENV = "production"
+
+# Server-side rendering configuration (if applicable)
+# [[redirects]]
+#   from = "/api/*"
+#   to = "/.netlify/functions/:splat"
+#   status = 200
+
+# SPA fallback - uncomment if this is a single-page application
+# [[redirects]]
+#   from = "/*"
+#   to = "/index.html"
+#   status = 200
+
+# Custom headers (optional)
+# [[headers]]
+#   for = "/*"
+#   [headers.values]
+#     X-Frame-Options = "DENY"
+#     X-Content-Type-Options = "nosniff"
+#     Referrer-Policy = "no-referrer"
