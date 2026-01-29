@@ -961,12 +961,20 @@ function TheHorizon({ dates, today }: { dates: any, durations: any, today: Date 
 
                 {/* Ground (Timeline) */}
                 <div className="absolute bottom-0 left-0 right-0 h-[100px] border-t border-neutral-800 bg-[#080808]">
-                    {/* Quarter Lines */}
+                    {/* Month Labels - Vertical */}
                     {Array.from({ length: Math.ceil(totalDays / 30) }).map((_, i) => {
                         const d = addDays(startDate, i * 30);
                         return (
                             <div key={i} className="absolute top-0 bottom-0 w-px bg-neutral-900" style={{ left: getX(d) }}>
-                                <span className="absolute top-2 left-2 text-[9px] text-neutral-700 uppercase tracking-wider">{format(d, "MMM")}</span>
+                                <span
+                                    className="absolute top-2 left-2 text-[9px] text-neutral-700 uppercase tracking-[0.15em] rotate-180"
+                                    style={{
+                                        writingMode: 'vertical-rl',
+                                        textOrientation: 'mixed'
+                                    }}
+                                >
+                                    {format(d, "MMMM")}
+                                </span>
                             </div>
                         )
                     })}
