@@ -1,6 +1,10 @@
 import { CheckCircle2, Circle, Calendar, BookOpen, ArrowRight, Flame, MoreHorizontal, TrendingUp, Flag } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { UserSettings, CompletionData } from '@/features/prototype2/types/hafiz';
+import { Card } from '@/components/ui/card';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useMemo } from 'react';
+import { cn } from '@/lib/utils';
 
 interface Dash1OriginalProps {
     settings: UserSettings;
@@ -300,8 +304,258 @@ const Dash1Original: React.FC<Dash1OriginalProps> = ({ settings, stats }) => {
                     </button>
                 </div>
             </div>
+
+            {/* Stacked Attendance Plot - Dark & Light Variants */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-6 lg:col-span-3">
+                <StackedAttendancePlot isDark={true} />
+                <StackedAttendancePlot isDark={false} />
+            </div>
         </div>
     );
 };
 
 export default Dash1Original;
+
+// ========================================
+// STACKED DOT PLOT COMPONENT
+// ========================================
+
+type Grade = 'A' | 'B' | 'C' | 'D';
+type Status = 'Present' | 'Absent';
+
+interface DayData {
+    dayName: string;
+    date: string;
+    grade?: Grade;
+    status: Status;
+}
+
+interface WeekData {
+    weekLabel: string;
+    days: DayData[];
+}
+
+const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+const GRADES: Grade[] = ['A', 'B', 'C', 'D'];
+
+// Dark Theme Colors
+const getDarkColor = (grade?: Grade) => {
+    switch (grade) {
+        case 'A': return 'bg-[#3d6e58]'; // Muted Sage Green
+        case 'B': return 'bg-[#4a5d85]'; // Muted Slate Blue
+        case 'C': return 'bg-[#8c7b4a]'; // Muted Gold/Olive
+        case 'D': return 'bg-zinc-800';  // Dark Gray
+        default: return 'bg-transparent';
+    }
+};
+
+// Light Theme Colors - Muted/Sophisticated
+const getLightColor = (grade?: Grade) => {
+    switch (grade) {
+        case 'A': return 'bg-[#2a9d8f]'; // Muted Teal
+        case 'B': return 'bg-[#6a98d3]'; // Muted Blue
+        case 'C': return 'bg-[#e9c46a]'; // Muted Mustard
+        case 'D': return 'bg-[#cfdbd5]'; // Soft Gray
+        default: return 'bg-transparent';
+    }
+};
+
+const generateStackedData = (weeks: number): WeekData[] => {
+    return Array.from({ length: weeks }, (_, weekIndex) => {
+        const weekStart = new Date(2025, 0, 1 + weekIndex * 7);
+        const daysData: DayData[] = DAYS.map((dayName, dayIndex) => {
+            const dayDate = new Date(weekStart);
+            dayDate.setDate(weekStart.getDate() + dayIndex);
+            const isPresent = Math.random() > 0.15;
+            return {
+                dayName,
+                date: dayDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                grade: isPresent ? GRADES[Math.floor(Math.random() * GRADES.length)] : undefined,
+                status: isPresent ? 'Present' : 'Absent',
+            };
+        });
+        return {
+            weekLabel: `W${weekIndex + 1}`,
+            days: daysData,
+        };
+    });
+};
+
+interface DotProps {
+    day: DayData;
+    delay: number;
+    isDark: boolean;
+}
+
+const StackedDot: React.FC<DotProps> = ({ day, delay, isDark }) => {
+    const [isHovered, setIsHovered] = useState(false);
+
+    if (day.status === 'Absent') {
+        return (
+            <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 260, damping: 20, delay }}
+                className={cn(
+                    "w-5 h-5 rounded-full mb-[2px]",
+                    isDark ? "bg-white/[0.03]" : "bg-gray-100"
+                )}
+            />
+        );
+    }
+
+    return (
+        <div className="relative group/dot z-0 hover:z-50 leading-none flex items-center justify-center mb-[2px]">
+            <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 260, damping: 20, delay }}
+                className={cn(
+                    "w-5 h-5 rounded-full cursor-pointer transition-all duration-200 hover:scale-110 relative z-10",
+                    isDark ? getDarkColor(day.grade) : getLightColor(day.grade)
+                )}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+            />
+
+            <AnimatePresence>
+                {isHovered && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 4, scale: 0.95 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 pointer-events-none z-50"
+                        style={{ width: 'max-content' }}
+                    >
+                        <div className={cn(
+                            "backdrop-blur-xl text-xs p-3 rounded-xl border shadow-2xl skew-y-0",
+                            isDark
+                                ? "bg-zinc-900/90 text-white border-white/10"
+                                : "bg-white/95 text-gray-800 border-gray-200"
+                        )}>
+                            <div className="font-semibold mb-1.5 opacity-90">
+                                {day.dayName}, {day.date}
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <span className="opacity-70 font-medium">Performance</span>
+                                <span className={cn(
+                                    "font-bold px-2 py-0.5 rounded text-[10px] tracking-wide shadow-sm uppercase",
+                                    day.grade === 'A' && (isDark ? "bg-[#3d6e58]/30 text-[#8fbdaa] border border-[#3d6e58]/50" : "bg-teal-100 text-teal-800"),
+                                    day.grade === 'B' && (isDark ? "bg-[#4a5d85]/30 text-[#9aaac7] border border-[#4a5d85]/50" : "bg-blue-100 text-blue-800"),
+                                    day.grade === 'C' && (isDark ? "bg-[#8c7b4a]/30 text-[#d4c391] border border-[#8c7b4a]/50" : "bg-amber-100 text-amber-800"),
+                                    day.grade === 'D' && (isDark ? "bg-zinc-800 text-zinc-400 border border-zinc-700" : "bg-gray-100 text-gray-600"),
+                                )}>
+                                    Grade {day.grade}
+                                </span>
+                            </div>
+                        </div>
+                        <div className={cn(
+                            "w-3 h-3 rotate-45 absolute left-1/2 -translate-x-1/2 -bottom-1.5 shadow-sm border-r border-b",
+                            isDark
+                                ? "bg-zinc-900 border-white/10"
+                                : "bg-white border-gray-200"
+                        )} />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+};
+
+interface StackedPlotProps {
+    isDark?: boolean;
+}
+
+export const StackedAttendancePlot: React.FC<StackedPlotProps> = ({ isDark = true }) => {
+    const data = useMemo(() => generateStackedData(20), []);
+
+    return (
+        <Card className={cn(
+            "p-8 border overflow-hidden",
+            isDark
+                ? "bg-[#09090b] border-white/5" // Deep dark / almost black
+                : "bg-white border-gray-100 shadow-sm"
+        )}>
+            <div className="space-y-8">
+                <div className="flex items-center justify-between flex-wrap gap-4">
+                    <div>
+                        <h2 className={cn(
+                            "text-xl font-bold tracking-tight",
+                            isDark ? "text-white" : "text-gray-900"
+                        )}>
+                            Attendance & Performance
+                        </h2>
+                        <p className={cn(
+                            "text-xs mt-1 font-medium uppercase tracking-widest",
+                            isDark ? "text-zinc-500" : "text-gray-400"
+                        )}>
+                            Last 20 Weeks • Stacked View
+                        </p>
+                    </div>
+
+                    <div className={cn(
+                        "flex gap-5 text-[10px] font-bold uppercase tracking-wider p-3 rounded-xl border backdrop-blur-sm",
+                        isDark
+                            ? "bg-white/[0.02] border-white/[0.05] text-zinc-400"
+                            : "bg-gray-50/80 border-gray-100 text-gray-500"
+                    )}>
+                        {GRADES.map(g => (
+                            <div key={g} className="flex items-center gap-2">
+                                <div className={cn(
+                                    "w-2.5 h-2.5 rounded-full shadow-sm",
+                                    isDark ? getDarkColor(g).split(' ')[0] : getLightColor(g).split(' ')[0]
+                                )} />
+                                <span className={isDark ? "text-zinc-300" : "text-gray-600"}>
+                                    {g}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="relative pt-2 pb-2 flex justify-center">
+                    <div className="flex gap-0 overflow-x-auto pb-6 custom-scrollbar mask-gradient-right px-4">
+                        {data.map((week, weekIndex) => {
+                            const sortedDays = [...week.days].sort((a, b) => {
+                                // 1. Status: Present (First/Bottom) vs Absent (Last/Top)
+                                if (a.status !== 'Absent' && b.status === 'Absent') return -1;
+                                if (a.status === 'Absent' && b.status !== 'Absent') return 1;
+                                if (a.status === 'Absent' && b.status === 'Absent') return 0;
+
+                                // 2. Grades: A (First/Bottom) -> D (Later/Top)
+                                const gradeWeight = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 };
+                                const gA = a.grade ? gradeWeight[a.grade] : 4;
+                                const gB = b.grade ? gradeWeight[b.grade] : 4;
+                                return gA - gB;
+                            });
+
+                            return (
+                                <div key={week.weekLabel} className="flex flex-col min-w-[20px] group/col">
+                                    <div className="flex flex-col-reverse items-center justify-end h-[140px]">
+                                        {sortedDays.map((day, dayIndex) => (
+                                            <StackedDot
+                                                key={`${weekIndex}-${day.date}`}
+                                                day={day}
+                                                delay={weekIndex * 0.02 + dayIndex * 0.01}
+                                                isDark={isDark}
+                                            />
+                                        ))}
+                                    </div>
+                                    <div className={cn(
+                                        "mt-3 text-[9px] font-bold text-center transition-all duration-300 uppercase tracking-wider",
+                                        isDark
+                                            ? "text-zinc-700 group-hover/col:text-zinc-400"
+                                            : "text-gray-300 group-hover/col:text-gray-500"
+                                    )}>
+                                        {weekIndex % 2 === 0 ? week.weekLabel : ''}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </div>
+        </Card>
+    );
+};
