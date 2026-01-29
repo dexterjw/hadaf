@@ -2,6 +2,7 @@ import { CheckCircle2, Circle, Calendar, BookOpen, ArrowRight, Flame, MoreHorizo
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { UserSettings, CompletionData } from '@/features/prototype2/types/hafiz';
 import { Card } from '@/components/ui/card';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
@@ -388,8 +389,6 @@ interface DotProps {
 }
 
 const StackedDot: React.FC<DotProps> = ({ day, delay, isDark }) => {
-    const [isHovered, setIsHovered] = useState(false);
-
     if (day.status === 'Absent') {
         return (
             <motion.div
@@ -405,50 +404,50 @@ const StackedDot: React.FC<DotProps> = ({ day, delay, isDark }) => {
     }
 
     return (
-        <div className="relative group/dot z-0 hover:z-50 leading-none flex items-center justify-center mb-[2px]">
-            <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ type: 'spring', stiffness: 260, damping: 20, delay }}
-                className={cn(
-                    "w-5 h-5 rounded-full cursor-pointer transition-all duration-200 hover:scale-110 relative z-10",
-                    isDark ? getDarkColor(day.grade) : getLightColor(day.grade)
-                )}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-            />
-
-            <AnimatePresence>
-                {isHovered && (
+        <Tooltip delayDuration={100}>
+            <TooltipTrigger asChild>
+                <div className="relative group/dot z-0 hover:z-50 leading-none flex items-center justify-center mb-[2px]">
                     <motion.div
-                        initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 4, scale: 0.95 }}
-                        transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 pointer-events-none z-50"
-                        style={{ width: 'max-content' }}
-                    >
-                        <div className={cn(
-                            "backdrop-blur-xl text-xs p-3 rounded-xl border shadow-2xl skew-y-0",
-                            isDark
-                                ? "bg-zinc-900/90 text-white border-white/10"
-                                : "bg-white/95 text-gray-800 border-gray-200"
-                        )}>
-                            <div className="font-semibold mb-1.5 opacity-90">
-                                {day.dayName}, {day.date}
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <span className="opacity-70 font-medium">Performance</span>
-                                <span className={cn(
-                                    "font-bold px-2 py-0.5 rounded text-[10px] tracking-wide shadow-sm uppercase",
-                                    day.grade === 'A' && (isDark ? "bg-[#3d6e58]/30 text-[#8fbdaa] border border-[#3d6e58]/50" : "bg-teal-100 text-teal-800"),
-                                    day.grade === 'B' && (isDark ? "bg-[#4a5d85]/30 text-[#9aaac7] border border-[#4a5d85]/50" : "bg-blue-100 text-blue-800"),
-                                    day.grade === 'C' && (isDark ? "bg-[#8c7b4a]/30 text-[#d4c391] border border-[#8c7b4a]/50" : "bg-amber-100 text-amber-800"),
-                                    day.grade === 'D' && (isDark ? "bg-zinc-800 text-zinc-400 border border-zinc-700" : "bg-gray-100 text-gray-600"),
-                                )}>
-                                    Grade {day.grade}
-                                </span>
-                            </div>
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ type: 'spring', stiffness: 260, damping: 20, delay }}
+                        className={cn(
+                            "w-5 h-5 rounded-full cursor-pointer transition-all duration-200 hover:scale-110 relative z-10",
+                            isDark ? getDarkColor(day.grade) : getLightColor(day.grade)
+                        )}
+                    />
+                </div>
+            </TooltipTrigger>
+            <TooltipContent
+                side="top"
+                sideOffset={10}
+                className="bg-transparent p-0 border-0 shadow-none overflow-visible"
+            >
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                >
+                    <div className={cn(
+                        "backdrop-blur-xl text-xs p-3 rounded-xl border shadow-2xl relative",
+                        isDark
+                            ? "bg-zinc-900/90 text-white border-white/10"
+                            : "bg-white/95 text-gray-800 border-gray-200"
+                    )}>
+                        <div className="font-semibold mb-1.5 opacity-90">
+                            {day.dayName}, {day.date}
+                        </div>
+                        <div className="flex items-center gap-4">
+                            <span className="opacity-70 font-medium">Performance</span>
+                            <span className={cn(
+                                "font-bold px-2 py-0.5 rounded text-[10px] tracking-wide shadow-sm uppercase",
+                                day.grade === 'A' && (isDark ? "bg-[#3d6e58]/30 text-[#8fbdaa] border border-[#3d6e58]/50" : "bg-teal-100 text-teal-800"),
+                                day.grade === 'B' && (isDark ? "bg-[#4a5d85]/30 text-[#9aaac7] border border-[#4a5d85]/50" : "bg-blue-100 text-blue-800"),
+                                day.grade === 'C' && (isDark ? "bg-[#8c7b4a]/30 text-[#d4c391] border border-[#8c7b4a]/50" : "bg-amber-100 text-amber-800"),
+                                day.grade === 'D' && (isDark ? "bg-zinc-800 text-zinc-400 border border-zinc-700" : "bg-gray-100 text-gray-600"),
+                            )}>
+                                Grade {day.grade}
+                            </span>
                         </div>
                         <div className={cn(
                             "w-3 h-3 rotate-45 absolute left-1/2 -translate-x-1/2 -bottom-1.5 shadow-sm border-r border-b",
@@ -456,10 +455,10 @@ const StackedDot: React.FC<DotProps> = ({ day, delay, isDark }) => {
                                 ? "bg-zinc-900 border-white/10"
                                 : "bg-white border-gray-200"
                         )} />
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
+                    </div>
+                </motion.div>
+            </TooltipContent>
+        </Tooltip>
     );
 };
 
@@ -471,91 +470,93 @@ export const StackedAttendancePlot: React.FC<StackedPlotProps> = ({ isDark = tru
     const data = useMemo(() => generateStackedData(20), []);
 
     return (
-        <Card className={cn(
-            "p-8 border overflow-hidden",
-            isDark
-                ? "bg-[#09090b] border-white/5" // Deep dark / almost black
-                : "bg-white border-gray-100 shadow-sm"
-        )}>
-            <div className="space-y-8">
-                <div className="flex items-center justify-between flex-wrap gap-4">
-                    <div>
-                        <h2 className={cn(
-                            "text-xl font-bold tracking-tight",
-                            isDark ? "text-white" : "text-gray-900"
+        <TooltipProvider>
+            <Card className={cn(
+                "p-8 border overflow-hidden",
+                isDark
+                    ? "bg-[#09090b] border-white/5" // Deep dark / almost black
+                    : "bg-white border-gray-100 shadow-sm"
+            )}>
+                <div className="space-y-8">
+                    <div className="flex items-center justify-between flex-wrap gap-4">
+                        <div>
+                            <h2 className={cn(
+                                "text-xl font-bold tracking-tight",
+                                isDark ? "text-white" : "text-gray-900"
+                            )}>
+                                Attendance & Performance
+                            </h2>
+                            <p className={cn(
+                                "text-xs mt-1 font-medium uppercase tracking-widest",
+                                isDark ? "text-zinc-500" : "text-gray-400"
+                            )}>
+                                Last 20 Weeks • Stacked View
+                            </p>
+                        </div>
+
+                        <div className={cn(
+                            "flex gap-5 text-[10px] font-bold uppercase tracking-wider p-3 rounded-xl border backdrop-blur-sm",
+                            isDark
+                                ? "bg-white/[0.02] border-white/[0.05] text-zinc-400"
+                                : "bg-gray-50/80 border-gray-100 text-gray-500"
                         )}>
-                            Attendance & Performance
-                        </h2>
-                        <p className={cn(
-                            "text-xs mt-1 font-medium uppercase tracking-widest",
-                            isDark ? "text-zinc-500" : "text-gray-400"
-                        )}>
-                            Last 20 Weeks • Stacked View
-                        </p>
-                    </div>
-
-                    <div className={cn(
-                        "flex gap-5 text-[10px] font-bold uppercase tracking-wider p-3 rounded-xl border backdrop-blur-sm",
-                        isDark
-                            ? "bg-white/[0.02] border-white/[0.05] text-zinc-400"
-                            : "bg-gray-50/80 border-gray-100 text-gray-500"
-                    )}>
-                        {GRADES.map(g => (
-                            <div key={g} className="flex items-center gap-2">
-                                <div className={cn(
-                                    "w-2.5 h-2.5 rounded-full shadow-sm",
-                                    isDark ? getDarkColor(g).split(' ')[0] : getLightColor(g).split(' ')[0]
-                                )} />
-                                <span className={isDark ? "text-zinc-300" : "text-gray-600"}>
-                                    {g}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="relative pt-2 pb-2 flex justify-center">
-                    <div className="flex gap-0 overflow-x-auto pb-6 custom-scrollbar mask-gradient-right px-4">
-                        {data.map((week, weekIndex) => {
-                            const sortedDays = [...week.days].sort((a, b) => {
-                                // 1. Status: Present (First/Bottom) vs Absent (Last/Top)
-                                if (a.status !== 'Absent' && b.status === 'Absent') return -1;
-                                if (a.status === 'Absent' && b.status !== 'Absent') return 1;
-                                if (a.status === 'Absent' && b.status === 'Absent') return 0;
-
-                                // 2. Grades: A (First/Bottom) -> D (Later/Top)
-                                const gradeWeight = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 };
-                                const gA = a.grade ? gradeWeight[a.grade] : 4;
-                                const gB = b.grade ? gradeWeight[b.grade] : 4;
-                                return gA - gB;
-                            });
-
-                            return (
-                                <div key={week.weekLabel} className="flex flex-col min-w-[20px] group/col">
-                                    <div className="flex flex-col-reverse items-center justify-end h-[140px]">
-                                        {sortedDays.map((day, dayIndex) => (
-                                            <StackedDot
-                                                key={`${weekIndex}-${day.date}`}
-                                                day={day}
-                                                delay={weekIndex * 0.02 + dayIndex * 0.01}
-                                                isDark={isDark}
-                                            />
-                                        ))}
-                                    </div>
+                            {GRADES.map(g => (
+                                <div key={g} className="flex items-center gap-2">
                                     <div className={cn(
-                                        "mt-3 text-[9px] font-bold text-center transition-all duration-300 uppercase tracking-wider",
-                                        isDark
-                                            ? "text-zinc-700 group-hover/col:text-zinc-400"
-                                            : "text-gray-300 group-hover/col:text-gray-500"
-                                    )}>
-                                        {weekIndex % 2 === 0 ? week.weekLabel : ''}
-                                    </div>
+                                        "w-2.5 h-2.5 rounded-full shadow-sm",
+                                        isDark ? getDarkColor(g).split(' ')[0] : getLightColor(g).split(' ')[0]
+                                    )} />
+                                    <span className={isDark ? "text-zinc-300" : "text-gray-600"}>
+                                        {g}
+                                    </span>
                                 </div>
-                            );
-                        })}
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="relative pt-2 pb-2 flex justify-center">
+                        <div className="flex gap-0 overflow-x-auto pb-6 custom-scrollbar mask-gradient-right px-4">
+                            {data.map((week, weekIndex) => {
+                                const sortedDays = [...week.days].sort((a, b) => {
+                                    // 1. Status: Present (First/Bottom) vs Absent (Last/Top)
+                                    if (a.status !== 'Absent' && b.status === 'Absent') return -1;
+                                    if (a.status === 'Absent' && b.status !== 'Absent') return 1;
+                                    if (a.status === 'Absent' && b.status === 'Absent') return 0;
+
+                                    // 2. Grades: A (First/Bottom) -> D (Later/Top)
+                                    const gradeWeight = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 };
+                                    const gA = a.grade ? gradeWeight[a.grade] : 4;
+                                    const gB = b.grade ? gradeWeight[b.grade] : 4;
+                                    return gA - gB;
+                                });
+
+                                return (
+                                    <div key={week.weekLabel} className="flex flex-col min-w-[20px] group/col">
+                                        <div className="flex flex-col-reverse items-center justify-end h-[140px]">
+                                            {sortedDays.map((day, dayIndex) => (
+                                                <StackedDot
+                                                    key={`${weekIndex}-${day.date}`}
+                                                    day={day}
+                                                    delay={weekIndex * 0.02 + dayIndex * 0.01}
+                                                    isDark={isDark}
+                                                />
+                                            ))}
+                                        </div>
+                                        <div className={cn(
+                                            "mt-3 text-[9px] font-bold text-center transition-all duration-300 uppercase tracking-wider",
+                                            isDark
+                                                ? "text-zinc-700 group-hover/col:text-zinc-400"
+                                                : "text-gray-300 group-hover/col:text-gray-500"
+                                        )}>
+                                            {weekIndex % 2 === 0 ? week.weekLabel : ''}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
                 </div>
-            </div>
-        </Card>
+            </Card>
+        </TooltipProvider>
     );
 };
