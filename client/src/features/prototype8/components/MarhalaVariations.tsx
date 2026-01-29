@@ -985,7 +985,7 @@ function TheStream({ dates, today }: { dates: any, durations: any, today: Date }
 // VARIATION 10: THE HORIZON
 // Cinematic, spacious, text-forward
 // ==========================================
-function TheHorizon({ dates, today }: { dates: any, durations: any, today: Date }) {
+function TheHorizon({ dates, durations, today }: { dates: any, durations: any, today: Date }) {
     const PIXELS_PER_DAY = 1.2;
     const startDate = addDays(today, -30);
     const endDate = addDays(dates.marhala3, 60);
@@ -1024,6 +1024,16 @@ function TheHorizon({ dates, today }: { dates: any, durations: any, today: Date 
                                             {m.title}
                                         </span>
                                     </div>
+
+                                    <div className="mt-4 mb-3">
+                                        <div className="text-2xl font-mono font-light tracking-tight text-white">
+                                            {format(pe, "MMMM")} <span className="text-neutral-500">{format(pe, "yyyy")}</span>
+                                        </div>
+                                        <div className="text-neutral-500 font-mono text-xs mt-1">
+                                            ({Math.round(durations[`m${i + 1}`] / 30)} months)
+                                        </div>
+                                    </div>
+
                                     <div className="mt-2 text-neutral-600 text-xs font-medium max-w-[200px] leading-relaxed">
                                         {m.desc}
                                     </div>
