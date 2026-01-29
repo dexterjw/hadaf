@@ -1,0 +1,10 @@
+# Exclude Express backend server (not used in Netlify deployment)
+server/
+
+# Exclude fullstack build artifacts (Netlify only uses client build)
+dist/index.cjs
+script/build.ts
+
+# Exclude development and testing files
+examples/
+specs/
