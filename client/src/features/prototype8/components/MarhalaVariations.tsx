@@ -889,7 +889,7 @@ function TheStream({ dates, today }: { dates: any, durations: any, today: Date }
                                 {/* Phase Active Line */}
                                 <div
                                     className={cn(
-                                        "absolute top-1/2 h-[4px] -translate-y-1/2 rounded-full transition-shadow duration-500",
+                                        "absolute top-1/2 h-[1px] -translate-y-1/2 rounded-full transition-shadow duration-500",
                                         m.color,
                                         m.id === 'm1' ? "shadow-[0_0_15px_rgba(16,185,129,0.6)]" :
                                             m.id === 'm2' ? "shadow-[0_0_15px_rgba(245,158,11,0.6)]" :
@@ -1005,9 +1005,15 @@ function TheHorizon({ dates, today }: { dates: any, durations: any, today: Date 
                         const startX = getX(ps);
                         const width = getX(pe) - startX;
 
+                        // Saturated glow color based on phase (reduced intensity)
+                        const glowFrom = m.id === 'm1' ? "from-emerald-500/5" :
+                            m.id === 'm2' ? "from-amber-500/5" :
+                                "from-indigo-500/5";
+
                         return (
                             <div key={m.id} className="absolute top-0 bottom-0 border-r border-neutral-900 overflow-hidden" style={{ left: startX, width }}>
                                 <div className={cn("absolute inset-0 bg-gradient-to-b opacity-[0.03]", m.gradient)} />
+                                <div className={cn("absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t to-transparent pointer-events-none", glowFrom)} />
                                 <div className="p-8">
                                     <h2 className="text-[80px] font-black text-white/[0.04] leading-none tracking-tighter uppercase select-none">
                                         {m.arabic}
@@ -1064,6 +1070,19 @@ function TheHorizon({ dates, today }: { dates: any, durations: any, today: Date 
 
                         return (
                             <div key={m.id}>
+                                {/* Phase Active Line */}
+                                {/* <div
+                                    className={cn(
+                                        "absolute top-[-1px] h-px w-full transition-all duration-500 z-10",
+                                        m.id === 'm1' ? "bg-emerald-500/30 shadow-[0_-15px_60px_rgba(16,185,129,0.8)]" :
+                                            m.id === 'm2' ? "bg-amber-500/30 shadow-[0_-15px_60px_rgba(245,158,11,0.8)]" :
+                                                "bg-indigo-500/30 shadow-[0_-15px_60px_rgba(99,102,241,0.8)]"
+                                    )}
+                                    style={{
+                                        left: startX,
+                                        width: width,
+                                    }}
+                                /> */}
                                 {milestones.map((juz) => {
                                     const jLeft = getX(juz.date);
 
