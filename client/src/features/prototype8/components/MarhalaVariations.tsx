@@ -82,13 +82,13 @@ export default function MarhalaVariations({ dates, today }: MarhalaVariationsPro
     const [activeVariation, setActiveVariation] = useState<string>("v1");
 
     const variations = [
-        { id: "v1", name: "Vertical Steps", component: VerticalSteps },
-        { id: "v7", name: "The Horizon", component: HorizontalCards },
-        { id: "v8", name: "The Ledger", component: CompactStack },
-        { id: "v9", name: "The Journey", component: ZigZagPath },
-        { id: "v3", name: "Bento Grid", component: BentoGrid },
-        { id: "v4", name: "Metro Line", component: MetroLine },
-        { id: "v5", name: "Radial Focus", component: RadialFocus },
+        { id: "v1", name: "Variation 1: Vertical Steps", component: VerticalSteps },
+        { id: "v3", name: "Variation 3: Bento Grid", component: BentoGrid },
+        { id: "v4", name: "Variation 4: Metro Line", component: MetroLine },
+        { id: "v5", name: "Variation 5: Radial Focus", component: RadialFocus },
+        { id: "v7", name: "Variation 7: The Horizon", component: HorizontalCards },
+        { id: "v8", name: "Variation 8: The Ledger", component: CompactStack },
+        { id: "v9", name: "Variation 9: The Journey", component: ZigZagPath },
     ];
 
     const ActiveComponent = variations.find(v => v.id === activeVariation)?.component || VerticalSteps;
