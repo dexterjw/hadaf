@@ -1,7 +1,7 @@
 [build]
   # Build client with Vite (no server bundling needed)
   # Note: Express backend in /server is excluded via .netlifyignore
-  command = "npm run build"
+  command = "npm install && npm run build"
   
   # Directory where static files are published after build
   publish = "dist/public"
@@ -13,8 +13,11 @@
   # Set Node version
   NODE_VERSION = "20"
   
-  # Set production environment
+  # Set production environment for build
   NODE_ENV = "production"
+  
+  # Ensure dev dependencies are installed (needed for Vite build)
+  NPM_FLAGS = "--include=dev"
 
 # API routes handled by Netlify Functions
 [[redirects]]
