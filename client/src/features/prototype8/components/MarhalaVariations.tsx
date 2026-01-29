@@ -87,6 +87,9 @@ export default function MarhalaVariations({ dates, today }: MarhalaVariationsPro
         { id: "v3", name: "Variation 3: The Ledger", component: CompactStack },
         { id: "v4", name: "Variation 4: The Journey", component: ZigZagPath },
         { id: "v6", name: "Variation 6: The Pulse", component: ThePulse },
+        { id: "v8", name: "Variation 8: The Stream", component: TheStream },
+        { id: "v9", name: "Variation 9: The Meter", component: TheMeter },
+        { id: "v10", name: "Variation 10: The Horizon", component: TheHorizon },
     ];
 
     const ActiveComponent = variations.find(v => v.id === activeVariation)?.component || VerticalSteps;
@@ -768,6 +771,332 @@ function ThePulse({ dates, today }: { dates: any, durations: any, today: Date })
 
 
 
+
+// ==========================================
+// VARIATION 8: THE STREAM
+// Fluid, organic, interconnected
+// ==========================================
+function TheStream({ dates, today }: { dates: any, durations: any, today: Date }) {
+    const PIXELS_PER_DAY = 1.6; // More spacious
+    const startDate = addDays(today, -30);
+    const endDate = addDays(dates.marhala3, 60);
+    const totalDays = differenceInDays(endDate, startDate);
+    const containerWidth = totalDays * PIXELS_PER_DAY;
+    const getX = (date: Date) => Math.max(0, differenceInDays(date, startDate)) * PIXELS_PER_DAY;
+
+    // Years background
+    const years = [];
+    let currentIterDate = new Date(startDate.getFullYear(), 0, 1);
+    const endIterDate = new Date(endDate.getFullYear() + 1, 0, 1);
+    while (currentIterDate < endIterDate) {
+        years.push(new Date(currentIterDate));
+        currentIterDate = new Date(currentIterDate.getFullYear() + 1, 0, 1);
+    }
+
+    return (
+        <div className="h-full w-full overflow-x-auto overflow-y-hidden bg-[#030303] custom-scrollbar flex items-center relative font-sans selection:bg-emerald-500/30">
+            <div style={{ width: `${containerWidth}px` }} className="relative h-full text-sm">
+
+                {/* Ambient Background Gradient */}
+                <div className="absolute inset-0 bg-gradient-to-b from-neutral-900/0 via-neutral-900/5 to-neutral-900/0 pointers-events-none" />
+
+                {/* Years - Subtle Vertical Dividers */}
+                {years.map((yearDate) => {
+                    const startX = getX(yearDate);
+                    if (startX < 0 || startX > containerWidth) return null;
+                    return (
+                        <div key={yearDate.getFullYear()} className="absolute top-0 bottom-0 border-l border-white/[0.03]" style={{ left: startX }}>
+                            <div className="ml-4 mt-8 text-6xl font-black text-white/[0.02] tracking-tighter select-none">
+                                {yearDate.getFullYear()}
+                            </div>
+                        </div>
+                    )
+                })}
+
+                {/* Central Stream Container */}
+                <div className="absolute top-1/2 left-0 right-0 h-40 -translate-y-1/2">
+                    {/* Connection Line (The Stream) */}
+                    <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-gradient-to-r from-emerald-900/50 via-neutral-800 to-indigo-900/50 blur-[1px]" />
+                    <div className="absolute top-1/2 left-0 right-0 h-px bg-neutral-800 opacity-50" />
+
+                    {MARHALA_DATA.map((m, i) => {
+                        const ps = i === 0 ? today : i === 1 ? dates.marhala1 : dates.marhala2;
+                        const pe = i === 0 ? dates.marhala1 : i === 1 ? dates.marhala2 : dates.marhala3;
+                        const milestones = generateJuzDates(ps, pe, m.startJuz, m.endJuz);
+                        const startX = getX(ps);
+                        const width = getX(pe) - startX;
+
+                        return (
+                            <div key={m.id}>
+                                {/* Phase Glow Underlay */}
+                                <div
+                                    className={cn("absolute top-1/2 -translate-y-1/2 h-32 blur-3xl opacity-10 rounded-full transition-opacity duration-500 hover:opacity-20", m.color)}
+                                    style={{ left: startX, width: width }}
+                                />
+
+                                {/* Phase Indicator (Minimal) */}
+                                <div
+                                    className="absolute top-[-60px] flex items-center gap-3 px-4 py-2"
+                                    style={{ left: startX }}
+                                >
+                                    <div className={cn("w-1.5 h-1.5 rounded-full shadow-[0_0_10px_currentColor]", m.textColor)} />
+                                    <span className={cn("text-xs font-bold uppercase tracking-[0.2em] opacity-80", m.textColor)}>
+                                        {m.title}
+                                    </span>
+                                </div>
+
+                                {/* Milestones */}
+                                {milestones.map((juz) => {
+                                    const jLeft = getX(juz.date);
+                                    const isUp = juz.juz % 2 === 0; // Simple alternating
+
+                                    return (
+                                        <div
+                                            key={juz.juz}
+                                            className="absolute top-1/2 -translate-y-1/2 z-20 group"
+                                            style={{ left: jLeft }}
+                                        >
+                                            {/* The Node - Organic Shape */}
+                                            <div className="relative">
+                                                <div className={cn(
+                                                    "w-3 h-3 -ml-[6px] rounded-full border border-neutral-700 bg-[#050505] transition-all duration-300 relative z-20 group-hover:scale-150 group-hover:border-white",
+                                                    m.id === 'm1' ? "group-hover:shadow-[0_0_20px_rgba(16,185,129,0.3)]" :
+                                                        m.id === 'm2' ? "group-hover:shadow-[0_0_20px_rgba(245,158,11,0.3)]" :
+                                                            "group-hover:shadow-[0_0_20px_rgba(99,102,241,0.3)]"
+                                                )} />
+                                            </div>
+
+                                            {/* The Label - Connected via subtle line */}
+                                            <div className={cn(
+                                                "absolute left-[-1px] w-px bg-gradient-to-b from-neutral-800 to-transparent transition-all duration-300 group-hover:bg-neutral-600",
+                                                isUp ? "bottom-3 h-12 bg-gradient-to-t" : "top-3 h-12"
+                                            )} />
+
+                                            <div className={cn(
+                                                "absolute transform -translate-x-1/2 flex flex-col items-center gap-1 min-w-[100px] transition-all duration-300",
+                                                isUp ? "bottom-[4.5rem] group-hover:bottom-[5rem]" : "top-[4.5rem] group-hover:top-[5rem]"
+                                            )}>
+                                                <div className="px-3 py-1.5 rounded-lg bg-[#0A0A0A] border border-neutral-900 group-hover:border-neutral-700 shadow-xl backdrop-blur-sm transition-colors text-center">
+                                                    <div className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider mb-0.5 group-hover:text-white transition-colors">
+                                                        Juz {juz.juz}
+                                                    </div>
+                                                    <div className="text-[9px] font-mono text-neutral-600 group-hover:text-neutral-400">
+                                                        {format(juz.date, "MMM d")}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ==========================================
+// VARIATION 9: THE METER
+// Technical, precision-instrument aesthetic
+// ==========================================
+function TheMeter({ dates, today }: { dates: any, durations: any, today: Date }) {
+    const PIXELS_PER_DAY = 2; // Wide spacing for precision
+    const startDate = addDays(today, -15);
+    const endDate = addDays(dates.marhala3, 30);
+    const totalDays = differenceInDays(endDate, startDate);
+    const containerWidth = totalDays * PIXELS_PER_DAY;
+    const getX = (date: Date) => Math.max(0, differenceInDays(date, startDate)) * PIXELS_PER_DAY;
+
+    return (
+        <div className="h-full w-full overflow-x-auto overflow-y-hidden bg-[#050505] custom-scrollbar flex flex-col justify-end relative font-mono text-xs">
+            <div style={{ width: `${containerWidth}px` }} className="relative h-full">
+
+                {/* Background Grid */}
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03]" />
+
+                {/* Main Action Area */}
+                <div className="absolute bottom-0 left-0 right-0 h-[60%] border-t border-neutral-900 bg-gradient-to-b from-[#080808] to-[#030303]">
+
+                    {/* Ruler Ticks (Days) */}
+                    {Array.from({ length: Math.ceil(totalDays / 7) }).map((_, i) => {
+                        const d = addDays(startDate, i * 7);
+                        const isMonthStart = d.getDate() <= 7;
+                        return (
+                            <div key={i} className="absolute bottom-0 top-0 border-l border-neutral-900/50" style={{ left: getX(d) }}>
+                                {isMonthStart && (
+                                    <div className="absolute top-2 left-2 text-[10px] text-neutral-700 uppercase tracking-widest">
+                                        {format(d, "MMM yyyy")}
+                                    </div>
+                                )}
+                            </div>
+                        )
+                    })}
+
+                    {MARHALA_DATA.map((m, i) => {
+                        const ps = i === 0 ? today : i === 1 ? dates.marhala1 : dates.marhala2;
+                        const pe = i === 0 ? dates.marhala1 : i === 1 ? dates.marhala2 : dates.marhala3;
+                        const milestones = generateJuzDates(ps, pe, m.startJuz, m.endJuz);
+
+                        return (
+                            <div key={m.id}>
+                                {milestones.map((juz) => {
+                                    const jLeft = getX(juz.date);
+                                    // Height variation based on juz number for "Audio Wave" look
+                                    const heightVar = 40 + (juz.juz % 5) * 15;
+
+                                    return (
+                                        <div
+                                            key={juz.juz}
+                                            className="absolute bottom-0 group hover:z-50"
+                                            style={{ left: jLeft }}
+                                        >
+                                            {/* The Bar */}
+                                            <div
+                                                className={cn(
+                                                    "w-[2px] bg-neutral-800 group-hover:bg-white transition-all duration-200 origin-bottom",
+                                                    m.color.replace('bg-', 'group-hover:bg-')
+                                                )}
+                                                style={{ height: `${heightVar}px` }}
+                                            />
+
+                                            {/* The Label (Appears on Hover) */}
+                                            <div className="absolute bottom-full mb-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-200 transform translate-y-2 group-hover:translate-y-0">
+                                                <div className="bg-neutral-900 border border-neutral-800 p-3 rounded-sm shadow-2xl flex flex-col items-center gap-1 min-w-[120px]">
+                                                    <span className={cn("text-[10px] uppercase font-bold tracking-wider", m.textColor)}>
+                                                        {m.title}
+                                                    </span>
+                                                    <span className="text-sm font-bold text-white">JUZ {juz.juz}</span>
+                                                    <span className="text-[10px] text-neutral-500">{format(juz.date, "EEEE, MMM d")}</span>
+                                                </div>
+                                                {/* Arrow */}
+                                                <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-neutral-800 mx-auto mt-[-1px]" />
+                                            </div>
+
+                                            {/* Static Label (Rotated) */}
+                                            <div className="absolute bottom-2 left-[4px] origin-bottom-left -rotate-90 opacity-40 group-hover:opacity-100 transition-opacity">
+                                                <span className="text-[9px] text-neutral-500 whitespace-nowrap">JUZ {juz.juz}</span>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        )
+                    })}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ==========================================
+// VARIATION 10: THE HORIZON
+// Cinematic, spacious, text-forward
+// ==========================================
+function TheHorizon({ dates, today }: { dates: any, durations: any, today: Date }) {
+    const PIXELS_PER_DAY = 1.2;
+    const startDate = addDays(today, -30);
+    const endDate = addDays(dates.marhala3, 60);
+    const totalDays = differenceInDays(endDate, startDate);
+    const containerWidth = totalDays * PIXELS_PER_DAY;
+    const getX = (date: Date) => Math.max(0, differenceInDays(date, startDate)) * PIXELS_PER_DAY;
+
+    return (
+        <div className="h-full w-full overflow-x-auto overflow-y-hidden bg-[#0A0A0A] custom-scrollbar flex items-center relative font-sans">
+            <div style={{ width: `${containerWidth}px` }} className="relative h-full">
+
+                {/* Sky (Phase Backgrounds) */}
+                <div className="absolute top-0 bottom-[100px] left-0 right-0">
+                    {MARHALA_DATA.map((m, i) => {
+                        const ps = i === 0 ? today : i === 1 ? dates.marhala1 : dates.marhala2;
+                        const pe = i === 0 ? dates.marhala1 : i === 1 ? dates.marhala2 : dates.marhala3;
+                        const startX = getX(ps);
+                        const width = getX(pe) - startX;
+
+                        return (
+                            <div key={m.id} className="absolute top-0 bottom-0 border-r border-neutral-900 overflow-hidden" style={{ left: startX, width }}>
+                                <div className={cn("absolute inset-0 bg-gradient-to-b opacity-[0.03]", m.gradient)} />
+                                <div className="p-8">
+                                    <h2 className="text-[80px] font-black text-white/[0.04] leading-none tracking-tighter uppercase select-none">
+                                        {m.arabic}
+                                    </h2>
+                                    <div className="mt-4 flex items-center gap-4">
+                                        <div className={cn("h-1 w-12 rounded-full", m.color)} />
+                                        <span className={cn("text-sm font-bold uppercase tracking-widest", m.textColor)}>
+                                            {m.title}
+                                        </span>
+                                    </div>
+                                    <div className="mt-2 text-neutral-600 text-xs font-medium max-w-[200px] leading-relaxed">
+                                        {m.desc}
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    })}
+                </div>
+
+                {/* Ground (Timeline) */}
+                <div className="absolute bottom-0 left-0 right-0 h-[100px] border-t border-neutral-800 bg-[#080808]">
+                    {/* Quarter Lines */}
+                    {Array.from({ length: Math.ceil(totalDays / 30) }).map((_, i) => {
+                        const d = addDays(startDate, i * 30);
+                        return (
+                            <div key={i} className="absolute top-0 bottom-0 w-px bg-neutral-900" style={{ left: getX(d) }}>
+                                <span className="absolute top-2 left-2 text-[9px] text-neutral-700 uppercase tracking-wider">{format(d, "MMM")}</span>
+                            </div>
+                        )
+                    })}
+
+                    {MARHALA_DATA.map((m, i) => {
+                        const ps = i === 0 ? today : i === 1 ? dates.marhala1 : dates.marhala2;
+                        const pe = i === 0 ? dates.marhala1 : i === 1 ? dates.marhala2 : dates.marhala3;
+                        const milestones = generateJuzDates(ps, pe, m.startJuz, m.endJuz);
+
+                        return (
+                            <div key={m.id}>
+                                {milestones.map((juz) => {
+                                    const jLeft = getX(juz.date);
+
+                                    return (
+                                        <div
+                                            key={juz.juz}
+                                            className="absolute top-[-6px] group cursor-pointer"
+                                            style={{ left: jLeft }}
+                                        >
+                                            {/* Milestone Point */}
+                                            <div className="w-[11px] h-[11px] -ml-[5px] rotate-45 border border-neutral-700 bg-[#0A0A0A] group-hover:bg-white group-hover:border-white transition-colors z-20 relative shadow-sm" />
+
+                                            {/* Connection Line to Bottom */}
+                                            <div className="absolute top-[5px] left-0 w-px h-[40px] bg-neutral-800 group-hover:bg-neutral-600 transition-colors" />
+
+                                            {/* Label below */}
+                                            <div className="absolute top-[45px] left-1/2 -translate-x-1/2 flex flex-col items-center">
+                                                <span className="text-[9px] font-bold text-neutral-600 group-hover:text-white transition-colors uppercase tracking-wider">
+                                                    Juz {juz.juz}
+                                                </span>
+                                            </div>
+
+                                            {/* Hover Tooltip - Floating Above */}
+                                            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-50 pointer-events-none">
+                                                <div className="px-3 py-2 bg-white text-black rounded shadow-2xl flex flex-col items-center min-w-[max-content]">
+                                                    <span className="text-xs font-bold">{format(juz.date, "MMMM do, yyyy")}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        )
+                    })}
+                </div>
+
+            </div>
+        </div>
+    );
+}
+
 // Add these utility classes to global css if needed, or inline styles
 // .custom-scrollbar: { scrollbar-width: thin; scrollbar-color: #333 #000; }
+
 
