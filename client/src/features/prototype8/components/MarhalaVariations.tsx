@@ -83,12 +83,9 @@ export default function MarhalaVariations({ dates, today }: MarhalaVariationsPro
 
     const variations = [
         { id: "v1", name: "Variation 1: Vertical Steps", component: VerticalSteps },
-        { id: "v3", name: "Variation 3: Bento Grid", component: BentoGrid },
-        { id: "v4", name: "Variation 4: Metro Line", component: MetroLine },
-        { id: "v5", name: "Variation 5: Radial Focus", component: RadialFocus },
-        { id: "v7", name: "Variation 7: The Horizon", component: HorizontalCards },
-        { id: "v8", name: "Variation 8: The Ledger", component: CompactStack },
-        { id: "v9", name: "Variation 9: The Journey", component: ZigZagPath },
+        { id: "v2", name: "Variation 2: Bento Grid", component: BentoGrid },
+        { id: "v3", name: "Variation 3: The Ledger", component: CompactStack },
+        { id: "v4", name: "Variation 4: The Journey", component: ZigZagPath },
     ];
 
     const ActiveComponent = variations.find(v => v.id === activeVariation)?.component || VerticalSteps;
@@ -266,7 +263,7 @@ function VerticalSteps({ dates, durations, today }: { dates: any, durations: any
 // ==========================================
 
 // ==========================================
-// VARIATION 3: BENTO GRID
+// VARIATION 2: BENTO GRID
 // Structured grid layout
 // ==========================================
 function BentoGrid({ dates, durations, today }: { dates: any, durations: any, today: Date }) {
@@ -343,255 +340,9 @@ function BentoGrid({ dates, durations, today }: { dates: any, durations: any, to
     );
 }
 
-// ==========================================
-// VARIATION 4: METRO LINE
-// Minimalist connector nodes vertical/horizontal
-// ==========================================
-function MetroLine({ dates, durations, today }: { dates: any, durations: any, today: Date }) {
-    const [expandedPhases, setExpandedPhases] = useState<Record<string, boolean>>({});
-
-    const togglePhase = (id: string) => {
-        setExpandedPhases(prev => ({ ...prev, [id]: !prev[id] }));
-    };
-
-    return (
-        <div className="h-full flex items-center justify-center p-8 overflow-y-auto">
-            <div className="flex flex-col md:flex-row items-start justify-center gap-4 w-full max-w-6xl">
-                {MARHALA_DATA.map((m, i) => {
-                    const phaseEndDate = i === 0 ? dates.marhala1 : i === 1 ? dates.marhala2 : dates.marhala3;
-                    const phaseStartDate = i === 0 ? today : i === 1 ? dates.marhala1 : dates.marhala2;
-                    const isExpanded = expandedPhases[m.id];
-                    const juzMilestones = generateJuzDates(phaseStartDate, phaseEndDate, m.startJuz, m.endJuz);
-
-                    return (
-                        <motion.div
-                            key={m.id}
-                            layout
-                            className="flex-1 flex flex-col items-center w-full relative"
-                        >
-                            {/* The Line - simplified for expandability */}
-                            {i < MARHALA_DATA.length - 1 && (
-                                <div className="hidden md:block absolute left-[50%] top-6 w-full h-[2px] bg-neutral-800 -z-10 translate-x-[50%]">
-                                </div>
-                            )}
-
-                            {/* The Node */}
-                            <motion.div
-                                className="flex flex-col items-center text-center w-full group cursor-pointer"
-                                layout
-                            >
-                                <div className={cn(
-                                    "w-12 h-12 rounded-full border-4 border-[#030303] flex items-center justify-center mb-6 shadow-2xl relative z-10 bg-neutral-900",
-                                    m.color
-                                )}>
-                                    <m.icon className="w-5 h-5 text-white" />
-                                </div>
-
-                                <div className="flex items-center gap-2 mb-1">
-                                    <span className="text-lg font-light text-white">{m.title}</span>
-                                    <span className="w-1 h-1 rounded-full bg-neutral-700" />
-                                    <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">{m.range}</span>
-                                </div>
-
-                                <div className="text-2xl font-light text-white mb-1">
-                                    {format(phaseEndDate, "MMM")} <span className="text-neutral-500">{format(phaseEndDate, "yyyy")}</span>
-                                </div>
-                                <div className="text-sm text-neutral-400 font-medium mb-2">
-                                    {Math.round(durations[`m${i + 1}`] / 30)} months
-                                </div>
-
-                                <button
-                                    onClick={() => togglePhase(m.id)}
-                                    className="flex items-center gap-2 text-[10px] text-neutral-400 hover:text-white transition-colors uppercase tracking-widest mb-4"
-                                >
-                                    {isExpanded ? "Less" : "Details"}
-                                    {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                                </button>
-
-                                <div className="w-full max-w-xs text-left">
-                                    <JuzBreakdown
-                                        milestones={juzMilestones}
-                                        isExpanded={isExpanded}
-                                        phaseStartDate={phaseStartDate}
-                                    />
-                                </div>
-                            </motion.div>
-                        </motion.div>
-                    );
-                })}
-            </div>
-        </div>
-    );
-}
-
 
 // ==========================================
-// VARIATION 5: RADIAL FOCUS
-// Circular progress
-// ==========================================
-function RadialFocus({ dates, durations, today }: { dates: any, durations: any, today: Date }) {
-    const [expandedPhases, setExpandedPhases] = useState<Record<string, boolean>>({});
-
-    const togglePhase = (id: string) => {
-        setExpandedPhases(prev => ({ ...prev, [id]: !prev[id] }));
-    };
-
-    return (
-        <div className="h-full flex items-center justify-center p-8 bg-[#050505] overflow-y-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-6xl">
-                {MARHALA_DATA.map((m, i) => {
-                    const phaseEndDate = i === 0 ? dates.marhala1 : i === 1 ? dates.marhala2 : dates.marhala3;
-                    const phaseStartDate = i === 0 ? today : i === 1 ? dates.marhala1 : dates.marhala2;
-                    const isExpanded = expandedPhases[m.id];
-                    const juzMilestones = generateJuzDates(phaseStartDate, phaseEndDate, m.startJuz, m.endJuz);
-
-                    return (
-                        <div key={m.id} className="flex flex-col items-center">
-                            <div className="relative w-64 h-64 flex items-center justify-center mb-8">
-                                {/* Rings */}
-                                <svg className="absolute inset-0 w-full h-full transform -rotate-90">
-                                    <circle cx="128" cy="128" r="120" stroke="#1a1a1a" strokeWidth="2" fill="none" />
-                                    <motion.circle
-                                        cx="128" cy="128" r="120"
-                                        stroke="currentColor"
-                                        strokeWidth="4"
-                                        fill="none"
-                                        className={m.textColor}
-                                        strokeDasharray="754"
-                                        strokeDashoffset="754"
-                                        initial={{ strokeDashoffset: 754 }}
-                                        animate={{ strokeDashoffset: 754 - (754 * ((i + 1) * 33) / 100) }}
-                                        transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
-                                    />
-                                </svg>
-
-                                <div className="text-center">
-                                    <div className="text-6xl font-thin tracking-tighter mb-1 text-white">
-                                        {i + 1}
-                                    </div>
-                                    <div className="text-[10px] uppercase tracking-[0.3em] text-neutral-500">Phase</div>
-                                </div>
-                            </div>
-
-                            <div className="text-2xl font-light text-white mb-1 whitespace-nowrap">
-                                {format(phaseEndDate, "MMMM")} <span className="text-neutral-500">{format(phaseEndDate, "yyyy")}</span>
-                            </div>
-                            <div className="text-sm text-neutral-400 font-mono mb-4">
-                                {Math.round(durations[`m${i + 1}`] / 30)} months
-                            </div>
-                            <h3 className="text-xl text-white font-medium mb-1">{m.title}</h3>
-                            <p className="text-xs text-neutral-600 max-w-[200px] text-center mb-4">{m.desc}</p>
-
-                            <button
-                                onClick={() => togglePhase(m.id)}
-                                className="flex items-center gap-2 text-[10px] text-neutral-400 hover:text-white transition-colors uppercase tracking-widest mb-4"
-                            >
-                                {isExpanded ? "Back to Summary" : "View Schedule"}
-                                {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                            </button>
-
-                            <div className="w-full max-w-xs text-left bg-neutral-900/20 rounded-xl p-2">
-                                <JuzBreakdown
-                                    milestones={juzMilestones}
-                                    isExpanded={isExpanded}
-                                    phaseStartDate={phaseStartDate}
-                                // limit height logic handled by AnimatePresence
-                                />
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-        </div>
-    );
-}
-
-// ==========================================
-// VARIATION 7: HORIZONTAL CARDS ("The Horizon")
-// ==========================================
-function HorizontalCards({ dates, durations, today }: { dates: any, durations: any, today: Date }) {
-    const [expandedPhases, setExpandedPhases] = useState<Record<string, boolean>>({});
-
-    const togglePhase = (id: string) => {
-        setExpandedPhases(prev => ({ ...prev, [id]: !prev[id] }));
-    };
-
-    return (
-        <div className="h-full flex flex-col justify-center p-8 overflow-y-hidden">
-            <h2 className="text-2xl font-light text-center mb-8 tracking-tight shrink-0">Your Journey Timeline</h2>
-            <div className="flex-1 flex items-center gap-6 overflow-x-auto pb-8 px-4 no-scrollbar snap-x snap-mandatory">
-                {MARHALA_DATA.map((m, i) => {
-                    const phaseEndDate = i === 0 ? dates.marhala1 : i === 1 ? dates.marhala2 : dates.marhala3;
-                    const phaseStartDate = i === 0 ? today : i === 1 ? dates.marhala1 : dates.marhala2;
-                    const isExpanded = expandedPhases[m.id];
-                    const juzMilestones = generateJuzDates(phaseStartDate, phaseEndDate, m.startJuz, m.endJuz);
-
-                    return (
-                        <motion.div
-                            key={m.id}
-                            className={cn(
-                                "relative w-[340px] shrink-0 bg-neutral-900/60 rounded-3xl border border-neutral-800/50 overflow-hidden flex flex-col snap-center transition-all duration-500",
-                                isExpanded ? "h-full bg-neutral-900" : "h-[420px]"
-                            )}
-                            initial={{ opacity: 0, x: 50 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.1 }}
-                        >
-                            <div className={cn("h-24 relative overflow-hidden p-6 flex items-start justify-between bg-gradient-to-br", m.gradient)}>
-                                <div className="absolute -right-4 -top-4 opacity-20">
-                                    <m.icon className="w-32 h-32 text-black" />
-                                </div>
-                                <div className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest bg-black/30 text-white backdrop-blur-sm">
-                                    {m.range}
-                                </div>
-                            </div>
-
-                            <div className="p-6 flex-1 flex flex-col overflow-hidden">
-                                <div className="mb-6">
-                                    <h3 className="text-2xl font-light text-white mb-2">{m.title}</h3>
-                                    <div className="text-3xl font-light tracking-tight text-white mb-1">
-                                        {format(phaseEndDate, "MMM")} <span className="text-neutral-500">{format(phaseEndDate, "yyyy")}</span>
-                                    </div>
-                                    <div className="text-xs font-mono text-neutral-500 mb-2">
-                                        {Math.round(durations[`m${i + 1}`] / 30)} months
-                                    </div>
-                                    <p className="text-neutral-400 text-xs leading-relaxed">{m.desc}</p>
-                                </div>
-
-                                {isExpanded && (
-                                    <motion.div
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        className="flex-1 overflow-y-auto pr-2 mb-4"
-                                    >
-                                        <JuzBreakdown
-                                            milestones={juzMilestones}
-                                            isExpanded={true}
-                                            phaseStartDate={phaseStartDate}
-                                        />
-                                    </motion.div>
-                                )}
-
-                                <div className="mt-auto">
-                                    <button
-                                        onClick={() => togglePhase(m.id)}
-                                        className="w-full py-3 flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-widest bg-neutral-800/50 hover:bg-neutral-800 rounded-xl transition-colors text-neutral-300"
-                                    >
-                                        {isExpanded ? "Hide Schedule" : "View Schedule"}
-                                        {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                                    </button>
-                                </div>
-                            </div>
-                        </motion.div>
-                    );
-                })}
-            </div>
-        </div>
-    );
-}
-
-// ==========================================
-// VARIATION 8: COMPACT STACK ("The Ledger")
+// VARIATION 3: COMPACT STACK ("The Ledger")
 // ==========================================
 function CompactStack({ dates, durations, today }: { dates: any, durations: any, today: Date }) {
     const [expandedPhase, setExpandedPhase] = useState<string | null>("m1");
@@ -688,7 +439,7 @@ function CompactStack({ dates, durations, today }: { dates: any, durations: any,
 }
 
 // ==========================================
-// VARIATION 9: ZIG-ZAG PATH ("The Journey")
+// VARIATION 4: ZIG-ZAG PATH ("The Journey")
 // ==========================================
 function ZigZagPath({ dates, durations, today }: { dates: any, durations: any, today: Date }) {
     const [expandedPhases, setExpandedPhases] = useState<Record<string, boolean>>({});
