@@ -981,6 +981,26 @@ function TheHorizon({ dates, today }: { dates: any, durations: any, today: Date 
                                 {milestones.map((juz) => {
                                     const jLeft = getX(juz.date);
 
+                                    // Calculate staggered heights (3 levels) with significant spacing
+                                    const heightLevel = juz.juz % 3;
+                                    let connectionHeight = "";
+                                    let labelOffset = "";
+
+                                    switch (heightLevel) {
+                                        case 0: // Short
+                                            connectionHeight = "h-[50px]";
+                                            labelOffset = "bottom-[55px]";
+                                            break;
+                                        case 1: // Medium
+                                            connectionHeight = "h-[100px]";
+                                            labelOffset = "bottom-[105px]";
+                                            break;
+                                        case 2: // Tall
+                                            connectionHeight = "h-[150px]";
+                                            labelOffset = "bottom-[155px]";
+                                            break;
+                                    }
+
                                     return (
                                         <div
                                             key={juz.juz}
@@ -988,20 +1008,32 @@ function TheHorizon({ dates, today }: { dates: any, durations: any, today: Date 
                                             style={{ left: jLeft }}
                                         >
                                             {/* Milestone Point */}
-                                            <div className="w-[11px] h-[11px] -ml-[5px] rotate-45 border border-neutral-700 bg-[#0A0A0A] group-hover:bg-white group-hover:border-white transition-colors z-20 relative shadow-sm" />
+                                            <div className={cn(
+                                                "w-[11px] h-[11px] -ml-[5px] rotate-45 border bg-[#0A0A0A] group-hover:bg-white group-hover:border-white transition-colors z-20 relative shadow-sm",
+                                                m.borderColor
+                                            )} />
 
-                                            {/* Connection Line to Bottom */}
-                                            <div className="absolute top-[5px] left-0 w-px h-[40px] bg-neutral-800 group-hover:bg-neutral-600 transition-colors" />
+                                            {/* Connection Line to Top */}
+                                            <div className={cn(
+                                                "absolute bottom-[5px] left-0 w-px bg-neutral-800 group-hover:bg-neutral-600 transition-colors",
+                                                connectionHeight
+                                            )} />
 
-                                            {/* Label below */}
-                                            <div className="absolute top-[45px] left-1/2 -translate-x-1/2 flex flex-col items-center">
-                                                <span className="text-[9px] font-bold text-neutral-600 group-hover:text-white transition-colors uppercase tracking-wider">
+                                            {/* Label above */}
+                                            <div className={cn(
+                                                "absolute left-1/2 -translate-x-1/2 flex flex-col items-center",
+                                                labelOffset
+                                            )}>
+                                                <span className="text-xs font-bold text-neutral-600 group-hover:text-white transition-colors uppercase tracking-wider whitespace-nowrap">
                                                     Juz {juz.juz}
                                                 </span>
                                             </div>
 
                                             {/* Hover Tooltip - Floating Above */}
-                                            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-50 pointer-events-none">
+                                            <div className={cn(
+                                                "absolute left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-50 pointer-events-none",
+                                                heightLevel === 0 ? "bottom-[70px]" : heightLevel === 1 ? "bottom-[120px]" : "bottom-[170px]"
+                                            )}>
                                                 <div className="px-3 py-2 bg-white text-black rounded shadow-2xl flex flex-col items-center min-w-[max-content]">
                                                     <span className="text-xs font-bold">{format(juz.date, "MMMM do, yyyy")}</span>
                                                 </div>
