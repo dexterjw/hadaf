@@ -550,6 +550,10 @@ function ZigZagPath({ dates, durations, today }: { dates: any, durations: any, t
 // VARIATION 6: THE PULSE
 // Modern, spacing-aware fluid stream
 // ==========================================
+// ==========================================
+// VARIATION 6: THE PULSE
+// Modern, spacing-aware fluid stream
+// ==========================================
 function ThePulse({ dates, today }: { dates: any, durations: any, today: Date }) {
     // Slightly more breathing room for text
     const PIXELS_PER_DAY = 1.4;
@@ -635,7 +639,7 @@ function ThePulse({ dates, today }: { dates: any, durations: any, today: Date })
                             <div key={m.id}>
                                 {/* Phase Active Line */}
                                 <div
-                                    className={cn("absolute top-1/2 h-[2px] -translate-y-1/2 shadow-lg", m.color)}
+                                    className={cn("absolute top-1/2 h-[16px] -translate-y-1/2 shadow-lg", m.color)}
                                     style={{
                                         left: startX,
                                         width: width,
@@ -656,9 +660,34 @@ function ThePulse({ dates, today }: { dates: any, durations: any, today: Date })
                                 </div>
 
                                 {/* Milestones */}
-                                {milestones.map((juz, idx) => {
+                                {milestones.map((juz) => {
                                     const jLeft = getX(juz.date);
-                                    const isStaggeredUp = idx % 2 === 0;
+
+                                    // 4-Level Staggering Logic
+                                    // 0: Short Up, 1: Short Down, 2: Tall Up, 3: Tall Down
+                                    const staggerType = juz.juz % 4;
+
+                                    let stemClass = "";
+                                    let labelClass = "";
+
+                                    switch (staggerType) {
+                                        case 0: // Short Up
+                                            stemClass = "bottom-3 h-12";
+                                            labelClass = "bottom-16";
+                                            break;
+                                        case 1: // Short Down
+                                            stemClass = "top-3 h-12";
+                                            labelClass = "top-16";
+                                            break;
+                                        case 2: // Tall Up
+                                            stemClass = "bottom-3 h-24";
+                                            labelClass = "bottom-28";
+                                            break;
+                                        case 3: // Tall Down
+                                            stemClass = "top-3 h-24";
+                                            labelClass = "top-28";
+                                            break;
+                                    }
 
                                     return (
                                         <div
@@ -668,7 +697,8 @@ function ThePulse({ dates, today }: { dates: any, durations: any, today: Date })
                                         >
                                             {/* Node */}
                                             <div className={cn(
-                                                "w-3 h-3 -ml-[6px] rounded-full border-[3px] border-[#030303] bg-neutral-800 transition-all duration-300 relative z-20",
+                                                "w-3 h-3 -ml-[6px] rounded-full border-[1px] bg-neutral-800 transition-all duration-300 relative z-20",
+                                                m.borderColor,
                                                 "group-hover:scale-125 group-hover:bg-white group-hover:border-white",
                                                 m.id === 'm1' ? "group-hover:shadow-[0_0_15px_rgba(16,185,129,0.5)]" :
                                                     m.id === 'm2' ? "group-hover:shadow-[0_0_15px_rgba(245,158,11,0.5)]" :
@@ -678,13 +708,19 @@ function ThePulse({ dates, today }: { dates: any, durations: any, today: Date })
                                             {/* Stem */}
                                             <div className={cn(
                                                 "absolute w-px bg-neutral-800 group-hover:bg-neutral-600 transition-colors -ml-[0.5px]",
-                                                isStaggeredUp ? "bottom-3 h-12" : "top-3 h-12"
+                                                stemClass
                                             )} />
 
                                             {/* Label Container */}
                                             <div className={cn(
                                                 "absolute transform -translate-x-1/2 flex flex-col items-center gap-1 min-w-[80px]",
-                                                isStaggeredUp ? "bottom-16" : "top-16"
+                                                labelClass,
+                                                // Adjust vertical flex order for bottom items so label is below date?
+                                                // Actually keeping standard order (Text, Date) is fine, just positioned differently.
+                                                // But for Down items, usually we want Stem -> Text -> Date (going down).
+                                                // Current interior structure is Text then Date.
+                                                // For "Top" items (Label above): Text (top), Date (bottom). OK.
+                                                // For "Bottom" items (Label below): Text (top), Date (bottom). This puts Date furthest down. OK.
                                             )}>
                                                 {/* Milestone Name */}
                                                 <div className="text-sm font-medium text-neutral-300 group-hover:text-white transition-colors tracking-tight">
