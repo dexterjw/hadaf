@@ -1,12 +1,12 @@
 [build]
-  # Build command from package.json
+  # Build client with Vite (no server bundling needed)
   command = "npm run build"
   
-  # Directory where your static files are published after build
+  # Directory where static files are published after build
   publish = "dist/public"
   
-  # Functions directory (if using Netlify Functions)
-  # functions = "netlify/functions"
+  # Netlify Functions directory
+  functions = "netlify/functions"
 
 [build.environment]
   # Set Node version
@@ -15,17 +15,17 @@
   # Set production environment
   NODE_ENV = "production"
 
-# Server-side rendering configuration (if applicable)
-# [[redirects]]
-#   from = "/api/*"
-#   to = "/.netlify/functions/:splat"
-#   status = 200
+# API routes handled by Netlify Functions
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
 
-# SPA fallback - uncomment if this is a single-page application
-# [[redirects]]
-#   from = "/*"
-#   to = "/index.html"
-#   status = 200
+# SPA fallback for client-side routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
 
 # Custom headers (optional)
 # [[headers]]
