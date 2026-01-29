@@ -603,6 +603,9 @@ function ThePulse({ dates, today }: { dates: any, durations: any, today: Date })
                         const endX = getX(new Date(yearEnd));
                         const width = endX - startX;
 
+                        // Only show label if we have enough breathing room
+                        const showLabel = width > 150;
+
                         return (
                             <div
                                 key={yearDate.getFullYear()}
@@ -613,11 +616,13 @@ function ThePulse({ dates, today }: { dates: any, durations: any, today: Date })
                                 style={{ left: startX, width: width, position: 'absolute' }}
                             >
                                 {/* Year Label - Modern & Elegant */}
-                                <div className="absolute top-6 left-6 flex items-baseline gap-2 opacity-30">
-                                    <span className="text-4xl font-light tracking-tighter text-white">
-                                        {yearDate.getFullYear()}
-                                    </span>
-                                </div>
+                                {showLabel && (
+                                    <div className="absolute top-6 left-6 flex items-baseline gap-2 opacity-30">
+                                        <span className="text-4xl font-light tracking-tighter text-white">
+                                            {yearDate.getFullYear()}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
                         );
                     })}
