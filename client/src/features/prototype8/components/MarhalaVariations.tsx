@@ -142,17 +142,14 @@ function VerticalSteps({ dates, durations, today }: { dates: any, durations: any
 
     return (
         <div className="max-w-3xl mx-auto py-12 px-6">
-            <h2 className="text-3xl font-light text-center mb-16 tracking-tight">Your Journey Milestones</h2>
-            <div className="relative border-l-2 border-neutral-800 ml-6 md:ml-12 space-y-16">
+            <h2 className="text-2xl font-light text-center mb-10 tracking-tight">Your Journey Milestones</h2>
+            <div className="relative border-l-2 border-neutral-800 ml-6 md:ml-12 space-y-8">
                 {MARHALA_DATA.map((m, i) => {
                     const phaseEndDate = i === 0 ? dates.marhala1 : i === 1 ? dates.marhala2 : dates.marhala3;
                     const phaseStartDate = i === 0 ? today : i === 1 ? dates.marhala1 : dates.marhala2;
                     const isExpanded = expandedPhases[m.id];
 
                     // Generate sub-milestones
-                    // For Marhala 3, we adjust the end date to account for 6 months revision if needed, 
-                    // but for visual simplicity we'll just distribute Juz 21-30 over the full period for now
-                    // or ideally subtract 180 days. Let's keep it simple for the "Explore" requested.
                     const juzMilestones = generateJuzDates(phaseStartDate, phaseEndDate, m.startJuz, m.endJuz);
 
                     return (
@@ -162,7 +159,7 @@ function VerticalSteps({ dates, durations, today }: { dates: any, durations: any
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: i * 0.15 }}
                             className="relative pl-12"
-                            style={{ paddingBottom: i === MARHALA_DATA.length - 1 ? 0 : `${Math.max(4, (durations[`m${i + 2}`] / durations.total) * 15)}rem` }}
+                            style={{ paddingBottom: i === MARHALA_DATA.length - 1 ? 0 : `${Math.max(2, (durations[`m${i + 2}`] / durations.total) * 10)}rem` }}
                         >
                             {/* Node */}
                             <div className={cn(
@@ -175,8 +172,12 @@ function VerticalSteps({ dates, durations, today }: { dates: any, durations: any
                             {/* Content - Date First Approach */}
                             <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-4 mb-2">
                                 <div>
-                                    <div className={cn("text-xs font-bold uppercase tracking-widest mb-2", m.textColor)}>
-                                        {m.range}
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <h3 className="text-lg font-light text-neutral-200">{m.title}</h3>
+                                        <div className="w-1 h-1 rounded-full bg-neutral-700" />
+                                        <div className={cn("text-xs font-bold uppercase tracking-widest", m.textColor)}>
+                                            {m.range}
+                                        </div>
                                     </div>
                                     <div className="flex items-baseline gap-2 mb-1">
                                         <h3 className="text-4xl font-light tracking-tight text-white">
@@ -186,8 +187,7 @@ function VerticalSteps({ dates, durations, today }: { dates: any, durations: any
                                             ({Math.round(durations[`m${i + 1}`] / 30)}mo)
                                         </span>
                                     </div>
-                                    <div className="text-xl text-neutral-300 font-light">{m.title}</div>
-                                    <p className="text-neutral-500 text-sm max-w-sm mt-2 mb-4">{m.desc}</p>
+                                    <p className="text-neutral-500 text-xs max-w-sm mt-1 mb-2">{m.desc}</p>
 
                                     {/* Toggle Breakdown */}
                                     <button
@@ -209,7 +209,7 @@ function VerticalSteps({ dates, durations, today }: { dates: any, durations: any
                                                 exit={{ opacity: 0, height: 0 }}
                                                 className="overflow-hidden"
                                             >
-                                                <div className="pt-6 pl-4 border-l border-neutral-800/50 space-y-3 ml-2">
+                                                <div className="pt-3 pl-4 border-l border-neutral-800/50 space-y-2 ml-2">
                                                     {juzMilestones.map((juz) => (
                                                         <div key={juz.juz} className="flex items-baseline gap-4 text-xs">
                                                             <div className="w-12 text-neutral-500 font-medium">Juz {juz.juz}</div>
