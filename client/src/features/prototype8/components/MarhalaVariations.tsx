@@ -964,16 +964,21 @@ function TheHorizon({ dates, today }: { dates: any, durations: any, today: Date 
                     {/* Month Labels - Vertical */}
                     {Array.from({ length: Math.ceil(totalDays / 30) }).map((_, i) => {
                         const d = addDays(startDate, i * 30);
+                        const isYear = d.getMonth() === 0; // January = new year
+
                         return (
                             <div key={i} className="absolute top-0 bottom-0 w-px bg-neutral-900" style={{ left: getX(d) }}>
                                 <span
-                                    className="absolute top-2 left-2 text-[9px] text-neutral-700 uppercase tracking-[0.15em] rotate-180"
+                                    className={cn(
+                                        "absolute top-2 left-2 text-[9px] uppercase tracking-[0.15em] rotate-180",
+                                        isYear ? "text-neutral-400 font-bold text-sm" : "text-neutral-700"
+                                    )}
                                     style={{
                                         writingMode: 'vertical-rl',
                                         textOrientation: 'mixed'
                                     }}
                                 >
-                                    {format(d, "MMMM")}
+                                    {isYear ? format(d, "yyyy") : format(d, "MMMM")}
                                 </span>
                             </div>
                         )
