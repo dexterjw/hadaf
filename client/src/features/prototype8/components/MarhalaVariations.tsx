@@ -922,7 +922,14 @@ function TheStream({ dates, today }: { dates: any, durations: any, today: Date }
                                 {/* Milestones */}
                                 {milestones.map((juz) => {
                                     const jLeft = getX(juz.date);
-                                    const isUp = juz.juz % 2 === 0; // Simple alternating
+                                    const isUp = juz.juz % 2 === 0;
+                                    // Stagger heights to prevent overlap: 0,1=Short; 2,3=Tall
+                                    // This ensures Up nodes alternate Short/Tall, and Down nodes alternate Short/Tall
+                                    const isTall = (juz.juz % 4 === 2) || (juz.juz % 4 === 3);
+
+                                    const stemHeight = isTall ? "h-24" : "h-12";
+                                    const labelBase = isTall ? (isUp ? "bottom-[7.5rem]" : "top-[7.5rem]") : (isUp ? "bottom-[4.5rem]" : "top-[4.5rem]");
+                                    const labelHover = isTall ? (isUp ? "group-hover:bottom-[8rem]" : "group-hover:top-[8rem]") : (isUp ? "group-hover:bottom-[5rem]" : "group-hover:top-[5rem]");
 
                                     return (
                                         <div
@@ -930,10 +937,10 @@ function TheStream({ dates, today }: { dates: any, durations: any, today: Date }
                                             className="absolute top-1/2 -translate-y-1/2 z-20 group"
                                             style={{ left: jLeft }}
                                         >
-                                            {/* The Node - Organic Shape */}
+                                            {/* The Node - Diamond Shape */}
                                             <div className="relative">
                                                 <div className={cn(
-                                                    "w-3 h-3 -ml-[6px] rounded-full border bg-[#050505] transition-all duration-300 relative z-20 group-hover:scale-150 group-hover:border-white",
+                                                    "w-3 h-3 -ml-[6px] rotate-45 border bg-[#050505] transition-all duration-300 relative z-20 group-hover:scale-150 group-hover:border-white",
                                                     m.borderColor,
                                                     m.id === 'm1' ? "group-hover:shadow-[0_0_20px_rgba(16,185,129,0.3)]" :
                                                         m.id === 'm2' ? "group-hover:shadow-[0_0_20px_rgba(245,158,11,0.3)]" :
@@ -944,12 +951,14 @@ function TheStream({ dates, today }: { dates: any, durations: any, today: Date }
                                             {/* The Label - Connected via subtle line */}
                                             <div className={cn(
                                                 "absolute left-[-1px] w-px bg-gradient-to-b from-neutral-800 to-transparent transition-all duration-300 group-hover:bg-neutral-600",
-                                                isUp ? "bottom-3 h-12 bg-gradient-to-t" : "top-3 h-12"
+                                                stemHeight,
+                                                isUp ? "bottom-3 bg-gradient-to-t" : "top-3"
                                             )} />
 
                                             <div className={cn(
                                                 "absolute transform -translate-x-1/2 flex flex-col items-center gap-1 min-w-[100px] transition-all duration-300",
-                                                isUp ? "bottom-[4.5rem] group-hover:bottom-[5rem]" : "top-[4.5rem] group-hover:top-[5rem]"
+                                                labelBase,
+                                                labelHover
                                             )}>
                                                 <div className="px-3 py-1.5 rounded-lg bg-[#0A0A0A] border border-neutral-900 group-hover:border-neutral-700 shadow-xl backdrop-blur-sm transition-colors text-center">
                                                     <div className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider mb-0.5 group-hover:text-white transition-colors">
