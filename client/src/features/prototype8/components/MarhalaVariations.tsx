@@ -689,7 +689,7 @@ function ThePulse({ dates, today }: { dates: any, durations: any, today: Date })
                                     style={{
                                         left: startX,
                                         width: width,
-                                        opacity: 0.4
+                                        opacity: 0.5
                                     }}
                                 />
 
