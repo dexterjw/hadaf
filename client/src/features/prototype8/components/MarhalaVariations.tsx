@@ -634,12 +634,13 @@ function TheHorizon({ dates, today }: { dates: any, durations: any, today: Date 
 
 // ==========================================
 // VARIATION 6: THE PULSE
-// Minimalist fluid stream with time scale
+// Modern, spacing-aware fluid stream
 // ==========================================
 function ThePulse({ dates, today }: { dates: any, durations: any, today: Date }) {
-    // Compressed scale
-    const PIXELS_PER_DAY = 1.2;
-    // Pad start/end
+    // Slightly more breathing room for text
+    const PIXELS_PER_DAY = 1.4;
+
+    // Bounds
     const startDate = addDays(today, -30);
     const endDate = addDays(dates.marhala3, 60);
     const totalDays = differenceInDays(endDate, startDate);
@@ -647,7 +648,7 @@ function ThePulse({ dates, today }: { dates: any, durations: any, today: Date })
 
     const getX = (date: Date) => Math.max(0, differenceInDays(date, startDate)) * PIXELS_PER_DAY;
 
-    // Generate time scale data
+    // Generate years for background
     const years = [];
     let currentIterDate = new Date(startDate.getFullYear(), 0, 1);
     const endIterDate = new Date(endDate.getFullYear() + 1, 0, 1);
@@ -657,20 +658,19 @@ function ThePulse({ dates, today }: { dates: any, durations: any, today: Date })
         currentIterDate = new Date(currentIterDate.getFullYear() + 1, 0, 1);
     }
 
-    // Helper colors for years to create the "hue shift"
-    const yearColors = [
-        "bg-blue-500/5 border-blue-500/10",
-        "bg-indigo-500/5 border-indigo-500/10",
-        "bg-purple-500/5 border-purple-500/10",
-        "bg-violet-500/5 border-violet-500/10",
+    // Subtle gradients for years - extremely restrained
+    const yearGradients = [
+        "from-blue-500/[0.03] via-blue-500/[0.01] to-transparent",
+        "from-indigo-500/[0.03] via-indigo-500/[0.01] to-transparent",
+        "from-violet-500/[0.03] via-violet-500/[0.01] to-transparent",
     ];
 
     return (
-        <div className="h-full w-full overflow-x-auto overflow-y-hidden bg-[#030303] custom-scrollbar flex items-center relative">
-            <div style={{ width: `${containerWidth}px` }} className="relative h-full">
+        <div className="h-full w-full overflow-x-auto overflow-y-hidden bg-[#030303] custom-scrollbar flex items-center relative font-sans">
+            <div style={{ width: `${containerWidth}px` }} className="relative h-full text-sm">
 
-                {/* Year Bands (Background) */}
-                <div className="absolute inset-0 flex">
+                {/* Years Background Layer */}
+                <div className="absolute inset-0 flex pointer-events-none">
                     {years.map((yearDate, i) => {
                         const yearStart = Math.max(startDate.getTime(), yearDate.getTime());
                         const nextYear = new Date(yearDate.getFullYear() + 1, 0, 1);
@@ -681,33 +681,32 @@ function ThePulse({ dates, today }: { dates: any, durations: any, today: Date })
                         const startX = getX(new Date(yearStart));
                         const endX = getX(new Date(yearEnd));
                         const width = endX - startX;
-                        const isEven = i % 2 === 0;
 
                         return (
                             <div
                                 key={yearDate.getFullYear()}
                                 className={cn(
-                                    "h-full border-l border-white/5 relative group",
-                                    yearColors[i % yearColors.length]
+                                    "h-full relative bg-gradient-to-r",
+                                    yearGradients[i % yearGradients.length]
                                 )}
                                 style={{ left: startX, width: width, position: 'absolute' }}
                             >
-                                <div className="absolute top-4 left-4 text-[100px] font-bold text-white/[0.03] select-none pointer-events-none leading-none tracking-tighter">
-                                    {yearDate.getFullYear()}
-                                </div>
-                                <div className="absolute bottom-4 left-4 text-xs font-bold text-white/20 select-none">
-                                    {yearDate.getFullYear()}
+                                {/* Year Label - Modern & Elegant */}
+                                <div className="absolute top-6 left-6 flex items-baseline gap-2 opacity-30">
+                                    <span className="text-4xl font-light tracking-tighter text-white">
+                                        {yearDate.getFullYear()}
+                                    </span>
                                 </div>
                             </div>
                         );
                     })}
                 </div>
 
-                {/* Central Timeline Container */}
-                <div className="absolute top-1/2 left-0 right-0 h-32 -translate-y-1/2">
+                {/* Central Timeline Layer */}
+                <div className="absolute top-1/2 left-0 right-0 h-64 -translate-y-1/2">
 
-                    {/* The Line */}
-                    <div className="absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-neutral-800 via-neutral-600 to-neutral-800" />
+                    {/* The Rail */}
+                    <div className="absolute top-1/2 left-0 right-0 h-px bg-neutral-800" />
 
                     {/* Phases & Milestones */}
                     {MARHALA_DATA.map((m, i) => {
@@ -715,22 +714,37 @@ function ThePulse({ dates, today }: { dates: any, durations: any, today: Date })
                         const pe = i === 0 ? dates.marhala1 : i === 1 ? dates.marhala2 : dates.marhala3;
                         const milestones = generateJuzDates(ps, pe, m.startJuz, m.endJuz);
 
+                        const startX = getX(ps);
+                        const width = getX(pe) - startX;
+
                         return (
                             <div key={m.id}>
-                                {/* Phase Highlight on Line */}
+                                {/* Phase Active Line */}
                                 <div
-                                    className={cn("absolute top-1/2 h-0.5 -translate-y-1/2 shadow-[0_0_15px_rgba(0,0,0,0.5)] z-10", m.color)}
+                                    className={cn("absolute top-1/2 h-[2px] -translate-y-1/2 shadow-lg", m.color)}
                                     style={{
-                                        left: getX(ps),
-                                        width: getX(pe) - getX(ps),
-                                        opacity: 0.6
+                                        left: startX,
+                                        width: width,
+                                        opacity: 0.4
                                     }}
                                 />
+
+                                {/* Phase Label - Floating clearly above */}
+                                <div
+                                    className="absolute top-6 left-0 text-center pointer-events-none z-10"
+                                    style={{ left: startX + width / 2, transform: 'translateX(-50%)' }}
+                                >
+                                    <div className={cn("px-3 py-1 rounded-full border bg-[#030303]/80 backdrop-blur-md shadow-xl", m.borderColor)}>
+                                        <div className={cn("text-xs font-bold uppercase tracking-widest", m.textColor)}>
+                                            {m.title}
+                                        </div>
+                                    </div>
+                                </div>
 
                                 {/* Milestones */}
                                 {milestones.map((juz, idx) => {
                                     const jLeft = getX(juz.date);
-                                    const isStaggeredUp = idx % 2 === 0; // Alternating Top/Bottom
+                                    const isStaggeredUp = idx % 2 === 0;
 
                                     return (
                                         <div
@@ -740,64 +754,58 @@ function ThePulse({ dates, today }: { dates: any, durations: any, today: Date })
                                         >
                                             {/* Node */}
                                             <div className={cn(
-                                                "w-2.5 h-2.5 -ml-[5px] rounded-full border border-[#030303] transition-all duration-300 group-hover:scale-150 group-hover:z-50 relative bg-neutral-900 group-hover:bg-white",
-                                                m.borderColor
+                                                "w-3 h-3 -ml-[6px] rounded-full border-[3px] border-[#030303] bg-neutral-800 transition-all duration-300 relative z-20",
+                                                "group-hover:scale-125 group-hover:bg-white group-hover:border-white",
+                                                m.id === 'm1' ? "group-hover:shadow-[0_0_15px_rgba(16,185,129,0.5)]" :
+                                                    m.id === 'm2' ? "group-hover:shadow-[0_0_15px_rgba(245,158,11,0.5)]" :
+                                                        "group-hover:shadow-[0_0_15px_rgba(99,102,241,0.5)]"
                                             )} />
 
-                                            {/* Connecting Line */}
+                                            {/* Stem */}
                                             <div className={cn(
-                                                "absolute w-px bg-neutral-800/50 group-hover:bg-white/50 transition-colors -ml-[0.5px]",
-                                                isStaggeredUp ? "bottom-2 h-8 mb-1" : "top-2 h-8 mt-1"
+                                                "absolute w-px bg-neutral-800 group-hover:bg-neutral-600 transition-colors -ml-[0.5px]",
+                                                isStaggeredUp ? "bottom-3 h-12" : "top-3 h-12"
                                             )} />
 
-                                            {/* Label */}
+                                            {/* Label Container */}
                                             <div className={cn(
-                                                "absolute transform -translate-x-1/2 text-[9px] font-mono text-neutral-500 transition-colors group-hover:text-white whitespace-nowrap",
-                                                isStaggeredUp ? "bottom-12" : "top-12"
-                                            )}>
-                                                J{juz.juz}
-                                            </div>
-
-                                            {/* Tooltip */}
-                                            <div className={cn(
-                                                "absolute left-1/2 -translate-x-1/2 px-2 py-1 bg-neutral-900 border border-neutral-800 rounded text-[10px] text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50",
+                                                "absolute transform -translate-x-1/2 flex flex-col items-center gap-1 min-w-[80px]",
                                                 isStaggeredUp ? "bottom-16" : "top-16"
                                             )}>
-                                                <span className={cn("font-bold mr-1", m.textColor)}>Juz {juz.juz}</span>
-                                                <span className="text-neutral-500">{format(juz.date, "MMM d")}</span>
+                                                {/* Milestone Name */}
+                                                <div className="text-sm font-medium text-neutral-300 group-hover:text-white transition-colors tracking-tight">
+                                                    Juz {juz.juz}
+                                                </div>
+
+                                                {/* Date - Always visible but subtle, pops on hover */}
+                                                <div className="text-[10px] font-mono font-medium text-neutral-600 group-hover:text-neutral-400 transition-colors uppercase tracking-wider bg-[#030303]/80 px-1 py-0.5 rounded">
+                                                    {format(juz.date, "dd MMM")}
+                                                </div>
                                             </div>
                                         </div>
                                     );
                                 })}
-
-                                {/* Phase Label (Centered in Phase) */}
-                                <div
-                                    className="absolute -top-10 text-xs font-bold uppercase tracking-widest text-center pointer-events-none opacity-50"
-                                    style={{
-                                        left: getX(ps) + (getX(pe) - getX(ps)) / 2,
-                                        transform: 'translateX(-50%)',
-                                        color: m.textColor ? undefined : 'white' // Fallback
-                                    }}
-                                >
-                                    <span className={cn(m.textColor)}>{m.title}</span>
-                                </div>
                             </div>
                         );
                     })}
                 </div>
 
-                {/* Bottom Time Axis */}
-                <div className="absolute bottom-0 left-0 right-0 h-8 border-t border-neutral-800/50 bg-[#030303]/50 backdrop-blur-sm">
-                    {/* Render months */}
+                {/* Bottom Time Axis - Clean & Minimal */}
+                <div className="absolute bottom-0 left-0 right-0 h-10 border-t border-neutral-900 bg-[#030303]/90 backdrop-blur-sm z-30">
                     {Array.from({ length: Math.ceil(totalDays / 30) }).map((_, i) => {
                         const d = addDays(startDate, i * 30);
+                        const isYear = d.getMonth() === 0;
                         return (
-                            <div key={i} className="absolute top-0 bottom-0 flex flex-col justify-center border-l border-white/5 pl-1" style={{ left: getX(d) }}>
+                            <div key={i} className="absolute top-0 bottom-0 flex flex-col justify-center" style={{ left: getX(d) }}>
+                                {/* Tick */}
+                                <div className={cn("absolute top-0 w-px bg-neutral-800 -translate-x-1/2", isYear ? "h-full" : "h-2")} />
+
+                                {/* Label */}
                                 <span className={cn(
-                                    "text-[9px] font-mono leading-none",
-                                    d.getMonth() === 0 ? "text-white font-bold" : "text-neutral-600"
+                                    "text-[10px] font-medium tracking-wide pl-2 select-none",
+                                    isYear ? "text-white" : "text-neutral-600"
                                 )}>
-                                    {d.getMonth() === 0 ? format(d, "yyyy") : format(d, "MMM")}
+                                    {isYear ? format(d, "yyyy") : format(d, "MMM")}
                                 </span>
                             </div>
                         );
