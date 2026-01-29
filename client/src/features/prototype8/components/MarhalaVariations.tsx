@@ -698,7 +698,7 @@ function ThePulse({ dates, today }: { dates: any, durations: any, today: Date })
                                     className="absolute top-22 left-0 text-center pointer-events-none z-50"
                                     style={{ left: startX + width / 2, transform: 'translateX(-50%)' }}
                                 >
-                                    <div className={cn("px-3 py-1 rounded-full border bg-[#030303]/80 backdrop-blur-md shadow-xl", m.borderColor)}>
+                                    <div className={cn("px-3 py-1 rounded-full bg-[#030303]/80 backdrop-blur-md shadow-xl", m.borderColor)}>
                                         <div className={cn("text-xs font-bold uppercase tracking-widest", m.textColor)}>
                                             {m.title}
                                         </div>
@@ -886,6 +886,22 @@ function TheStream({ dates, today }: { dates: any, durations: any, today: Date }
 
                         return (
                             <div key={m.id}>
+                                {/* Phase Active Line */}
+                                <div
+                                    className={cn(
+                                        "absolute top-1/2 h-[4px] -translate-y-1/2 rounded-full transition-shadow duration-500",
+                                        m.color,
+                                        m.id === 'm1' ? "shadow-[0_0_15px_rgba(16,185,129,0.6)]" :
+                                            m.id === 'm2' ? "shadow-[0_0_15px_rgba(245,158,11,0.6)]" :
+                                                "shadow-[0_0_15px_rgba(99,102,241,0.6)]"
+                                    )}
+                                    style={{
+                                        left: startX,
+                                        width: width,
+                                        opacity: 0.8
+                                    }}
+                                />
+
                                 {/* Phase Glow Underlay */}
                                 <div
                                     className={cn("absolute top-1/2 -translate-y-1/2 h-32 blur-3xl opacity-10 rounded-full transition-opacity duration-500 hover:opacity-20", m.color)}
@@ -894,11 +910,11 @@ function TheStream({ dates, today }: { dates: any, durations: any, today: Date }
 
                                 {/* Phase Indicator (Minimal) */}
                                 <div
-                                    className="absolute top-[-60px] flex items-center gap-3 px-4 py-2"
+                                    className="absolute top-[30px] flex items-center gap-3 px-4 py-2"
                                     style={{ left: startX }}
                                 >
                                     <div className={cn("w-1.5 h-1.5 rounded-full shadow-[0_0_10px_currentColor]", m.textColor)} />
-                                    <span className={cn("text-xs font-bold uppercase tracking-[0.2em] opacity-80", m.textColor)}>
+                                    <span className={cn("text-xs font-bold uppercase tracking-[0.6em] opacity-80", m.textColor)}>
                                         {m.title}
                                     </span>
                                 </div>
@@ -917,7 +933,8 @@ function TheStream({ dates, today }: { dates: any, durations: any, today: Date }
                                             {/* The Node - Organic Shape */}
                                             <div className="relative">
                                                 <div className={cn(
-                                                    "w-3 h-3 -ml-[6px] rounded-full border border-neutral-700 bg-[#050505] transition-all duration-300 relative z-20 group-hover:scale-150 group-hover:border-white",
+                                                    "w-3 h-3 -ml-[6px] rounded-full border bg-[#050505] transition-all duration-300 relative z-20 group-hover:scale-150 group-hover:border-white",
+                                                    m.borderColor,
                                                     m.id === 'm1' ? "group-hover:shadow-[0_0_20px_rgba(16,185,129,0.3)]" :
                                                         m.id === 'm2' ? "group-hover:shadow-[0_0_20px_rgba(245,158,11,0.3)]" :
                                                             "group-hover:shadow-[0_0_20px_rgba(99,102,241,0.3)]"
