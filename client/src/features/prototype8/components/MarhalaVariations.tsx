@@ -642,7 +642,7 @@ function ThePulse({ dates, today }: { dates: any, durations: any, today: Date })
                             <div key={m.id}>
                                 {/* Phase Active Line */}
                                 <div
-                                    className={cn("absolute top-1/2 h-[16px] -translate-y-1/2 shadow-lg", m.color)}
+                                    className={cn("absolute top-1/2 h-[4px] -translate-y-1/2 shadow-lg", m.color)}
                                     style={{
                                         left: startX,
                                         width: width,
@@ -652,7 +652,7 @@ function ThePulse({ dates, today }: { dates: any, durations: any, today: Date })
 
                                 {/* Phase Label - Floating clearly above */}
                                 <div
-                                    className="absolute top-6 left-0 text-center pointer-events-none z-10"
+                                    className="absolute top-22 left-0 text-center pointer-events-none z-50"
                                     style={{ left: startX + width / 2, transform: 'translateX(-50%)' }}
                                 >
                                     <div className={cn("px-3 py-1 rounded-full border bg-[#030303]/80 backdrop-blur-md shadow-xl", m.borderColor)}>
@@ -801,14 +801,26 @@ function TheStream({ dates, today }: { dates: any, durations: any, today: Date }
                 <div className="absolute inset-0 bg-gradient-to-b from-neutral-900/0 via-neutral-900/5 to-neutral-900/0 pointers-events-none" />
 
                 {/* Years - Subtle Vertical Dividers */}
+                {/* Years - Subtle Vertical Dividers */}
                 {years.map((yearDate) => {
+                    const nextYear = new Date(yearDate.getFullYear() + 1, 0, 1);
                     const startX = getX(yearDate);
-                    if (startX < 0 || startX > containerWidth) return null;
+                    const endX = getX(nextYear);
+                    const width = endX - startX;
+
+                    // If it's too far left/right or too narrow, don't show label
+                    if (startX > containerWidth) return null;
+
+                    // Only show label if we have enough breathing room (e.g. ~150px)
+                    const showLabel = width > 150;
+
                     return (
                         <div key={yearDate.getFullYear()} className="absolute top-0 bottom-0 border-l border-white/[0.03]" style={{ left: startX }}>
-                            <div className="ml-4 mt-8 text-6xl font-black text-white/[0.02] tracking-tighter select-none">
-                                {yearDate.getFullYear()}
-                            </div>
+                            {showLabel && (
+                                <div className="ml-4 mt-8 text-6xl font-black text-white/[0.02] tracking-tighter select-none">
+                                    {yearDate.getFullYear()}
+                                </div>
+                            )}
                         </div>
                     )
                 })}
