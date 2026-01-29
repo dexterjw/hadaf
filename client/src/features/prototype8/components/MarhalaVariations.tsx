@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { format, differenceInDays } from "date-fns";
+import { format, differenceInDays, addDays } from "date-fns";
 import { cn } from "@/lib/utils";
 import {
     Flag, Trophy, Target, ArrowRight, BookOpen, Layers,
-    Zap, Award, Calendar, ChevronRight, Play
+    Zap, Award, Calendar, ChevronRight, Play,
+    ChevronDown, ChevronUp
 } from "lucide-react";
 
 interface MarhalaVariationsProps {
@@ -22,6 +23,8 @@ const MARHALA_DATA = [
         title: "The Foundation",
         arabic: "Marhala 1",
         range: "Juz 1-5",
+        startJuz: 1,
+        endJuz: 5,
         desc: "A more focused initial phase to build core memorization habits.",
         icon: Layers,
         color: "bg-emerald-500",
@@ -34,6 +37,8 @@ const MARHALA_DATA = [
         title: "The Momentum",
         arabic: "Marhala 2",
         range: "Juz 6-20",
+        startJuz: 6,
+        endJuz: 20,
         desc: "Expanded momentum phase with consistent pace and retention.",
         icon: Zap,
         color: "bg-amber-500",
@@ -46,6 +51,8 @@ const MARHALA_DATA = [
         title: "The Mastery",
         arabic: "Marhala 3",
         range: "Juz 21-30",
+        startJuz: 21,
+        endJuz: 30,
         desc: "Complete Juz 21-30, then 6-month full Quran revision and Duhur.",
         icon: Trophy,
         color: "bg-indigo-500",
@@ -54,6 +61,22 @@ const MARHALA_DATA = [
         gradient: "from-indigo-500 to-indigo-700",
     },
 ];
+
+// Helper to generate interpolated dates for each Juz
+const generateJuzDates = (startDate: Date, endDate: Date, startJuz: number, endJuz: number) => {
+    const totalDays = differenceInDays(endDate, startDate);
+    const numberOfJuz = endJuz - startJuz + 1;
+    const daysPerJuz = totalDays / numberOfJuz;
+
+    return Array.from({ length: numberOfJuz }, (_, i) => {
+        const juzNum = startJuz + i;
+        const daysToAdd = Math.round((i + 1) * daysPerJuz);
+        return {
+            juz: juzNum,
+            date: addDays(startDate, daysToAdd)
+        };
+    });
+};
 
 export default function MarhalaVariations({ dates, today }: MarhalaVariationsProps) {
     const [activeVariation, setActiveVariation] = useState<string>("v1");
@@ -66,6 +89,14 @@ export default function MarhalaVariations({ dates, today }: MarhalaVariationsPro
     ];
 
     const ActiveComponent = variations.find(v => v.id === activeVariation)?.component || VerticalSteps;
+
+    // Calculate durations
+    const m1Dur = Math.max(1, differenceInDays(dates.marhala1, today));
+    const m2Dur = Math.max(1, differenceInDays(dates.marhala2, dates.marhala1));
+    const m3Dur = Math.max(1, differenceInDays(dates.marhala3, dates.marhala2));
+    const totalDur = m1Dur + m2Dur + m3Dur;
+
+    const durations = { m1: m1Dur, m2: m2Dur, m3: m3Dur, total: totalDur };
 
     return (
         <div className="flex flex-col h-full bg-[#030303] text-white overflow-hidden">
@@ -92,7 +123,7 @@ export default function MarhalaVariations({ dates, today }: MarhalaVariationsPro
 
             {/* Design Canvas */}
             <div className="flex-1 relative overflow-y-auto">
-                <ActiveComponent dates={dates} />
+                <ActiveComponent dates={dates} durations={durations} today={today} />
             </div>
         </div>
     );
@@ -102,13 +133,28 @@ export default function MarhalaVariations({ dates, today }: MarhalaVariationsPro
 // VARIATION 1: VERTICAL STEPS
 // Classic step layout with rich typography
 // ==========================================
-function VerticalSteps({ dates }: { dates: any }) {
+function VerticalSteps({ dates, durations, today }: { dates: any, durations: any, today: Date }) {
+    const [expandedPhases, setExpandedPhases] = useState<Record<string, boolean>>({});
+
+    const togglePhase = (id: string) => {
+        setExpandedPhases(prev => ({ ...prev, [id]: !prev[id] }));
+    };
+
     return (
         <div className="max-w-3xl mx-auto py-12 px-6">
             <h2 className="text-3xl font-light text-center mb-16 tracking-tight">Your Journey Milestones</h2>
             <div className="relative border-l-2 border-neutral-800 ml-6 md:ml-12 space-y-16">
                 {MARHALA_DATA.map((m, i) => {
-                    const date = i === 0 ? dates.marhala1 : i === 1 ? dates.marhala2 : dates.marhala3;
+                    const phaseEndDate = i === 0 ? dates.marhala1 : i === 1 ? dates.marhala2 : dates.marhala3;
+                    const phaseStartDate = i === 0 ? today : i === 1 ? dates.marhala1 : dates.marhala2;
+                    const isExpanded = expandedPhases[m.id];
+
+                    // Generate sub-milestones
+                    // For Marhala 3, we adjust the end date to account for 6 months revision if needed, 
+                    // but for visual simplicity we'll just distribute Juz 21-30 over the full period for now
+                    // or ideally subtract 180 days. Let's keep it simple for the "Explore" requested.
+                    const juzMilestones = generateJuzDates(phaseStartDate, phaseEndDate, m.startJuz, m.endJuz);
+
                     return (
                         <motion.div
                             key={m.id}
@@ -116,6 +162,7 @@ function VerticalSteps({ dates }: { dates: any }) {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: i * 0.15 }}
                             className="relative pl-12"
+                            style={{ paddingBottom: i === MARHALA_DATA.length - 1 ? 0 : `${Math.max(4, (durations[`m${i + 2}`] / durations.total) * 15)}rem` }}
                         >
                             {/* Node */}
                             <div className={cn(
@@ -125,18 +172,57 @@ function VerticalSteps({ dates }: { dates: any }) {
                                 <div className="w-1.5 h-1.5 bg-white rounded-full" />
                             </div>
 
-                            {/* Content */}
-                            <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-2 mb-2">
+                            {/* Content - Date First Approach */}
+                            <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-4 mb-2">
                                 <div>
-                                    <div className={cn("text-xs font-bold uppercase tracking-widest mb-1", m.textColor)}>
+                                    <div className={cn("text-xs font-bold uppercase tracking-widest mb-2", m.textColor)}>
                                         {m.range}
                                     </div>
-                                    <h3 className="text-3xl font-bold text-white mb-1">{m.title}</h3>
-                                    <p className="text-neutral-400 text-sm max-w-sm">{m.desc}</p>
-                                </div>
-                                <div className="text-right">
-                                    <div className="text-xs text-neutral-600 uppercase tracking-widest mb-1">Target Completion</div>
-                                    <div className="text-2xl font-mono text-white">{format(date, "MMM d, yyyy")}</div>
+                                    <div className="flex items-baseline gap-2 mb-1">
+                                        <h3 className="text-4xl font-light tracking-tight text-white">
+                                            {format(phaseEndDate, "MMMM")} <span className="text-neutral-500">{format(phaseEndDate, "yyyy")}</span>
+                                        </h3>
+                                        <span className="text-neutral-600 font-mono text-xs translate-y-[-2px]">
+                                            ({Math.round(durations[`m${i + 1}`] / 30)}mo)
+                                        </span>
+                                    </div>
+                                    <div className="text-xl text-neutral-300 font-light">{m.title}</div>
+                                    <p className="text-neutral-500 text-sm max-w-sm mt-2 mb-4">{m.desc}</p>
+
+                                    {/* Toggle Breakdown */}
+                                    <button
+                                        onClick={() => togglePhase(m.id)}
+                                        className="flex items-center gap-2 text-xs text-neutral-400 hover:text-white transition-colors group"
+                                    >
+                                        <span className="uppercase tracking-widest">
+                                            {isExpanded ? "Hide Breakdown" : "View Breakdown"}
+                                        </span>
+                                        {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3 group-hover:translate-y-0.5 transition-transform" />}
+                                    </button>
+
+                                    {/* Collapsible Sub-milestones */}
+                                    <AnimatePresence>
+                                        {isExpanded && (
+                                            <motion.div
+                                                initial={{ opacity: 0, height: 0 }}
+                                                animate={{ opacity: 1, height: "auto" }}
+                                                exit={{ opacity: 0, height: 0 }}
+                                                className="overflow-hidden"
+                                            >
+                                                <div className="pt-6 pl-4 border-l border-neutral-800/50 space-y-3 ml-2">
+                                                    {juzMilestones.map((juz) => (
+                                                        <div key={juz.juz} className="flex items-baseline gap-4 text-xs">
+                                                            <div className="w-12 text-neutral-500 font-medium">Juz {juz.juz}</div>
+                                                            <div className="flex-1 border-b border-neutral-900 mx-2" />
+                                                            <div className="text-neutral-300 whitespace-nowrap font-mono">
+                                                                {format(juz.date, "dd MMM yyyy")}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
                                 </div>
                             </div>
                         </motion.div>
@@ -148,13 +234,15 @@ function VerticalSteps({ dates }: { dates: any }) {
 }
 
 // ==========================================
+
+// ==========================================
 // VARIATION 3: BENTO GRID
 // Structured grid layout
 // ==========================================
-function BentoGrid({ dates }: { dates: any }) {
+function BentoGrid({ dates, durations }: { dates: any, durations: any }) {
     return (
         <div className="max-w-6xl mx-auto p-8 h-full flex items-center">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full">
                 {MARHALA_DATA.map((m, i) => {
                     const date = i === 0 ? dates.marhala1 : i === 1 ? dates.marhala2 : dates.marhala3;
                     return (
@@ -182,11 +270,11 @@ function BentoGrid({ dates }: { dates: any }) {
                                 </div>
 
                                 <div className="mt-8">
-                                    <div className="text-5xl font-thin tracking-tighter mb-2">
-                                        {format(date, "dd")}
+                                    <div className="text-3xl font-light tracking-tight text-white mb-1">
+                                        {format(date, "MMMM")} <span className="text-neutral-500">{format(date, "yyyy")}</span>
                                     </div>
-                                    <div className="text-sm font-medium text-neutral-400 uppercase tracking-widest">
-                                        {format(date, "MMMM yyyy")}
+                                    <div className="text-xs font-mono text-neutral-500">
+                                        {Math.round(durations[`m${i + 1}`] / 30)} months duration
                                     </div>
                                 </div>
                             </div>
@@ -202,7 +290,7 @@ function BentoGrid({ dates }: { dates: any }) {
 // VARIATION 4: METRO LINE
 // Minimalist connector nodes vertical/horizontal
 // ==========================================
-function MetroLine({ dates }: { dates: any }) {
+function MetroLine({ dates, durations }: { dates: any, durations: any }) {
     return (
         <div className="h-full flex items-center justify-center p-8">
             <div className="flex flex-col md:flex-row items-center gap-0 w-full max-w-5xl">
@@ -235,10 +323,13 @@ function MetroLine({ dates }: { dates: any }) {
                                 </div>
 
                                 <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-2">{m.range}</span>
-                                <h3 className="text-xl font-bold text-white mb-1">{m.title}</h3>
-                                <div className="text-sm text-neutral-400 font-mono bg-neutral-900 py-1 px-3 rounded-lg border border-neutral-800">
-                                    {format(date, "MMM d, yyyy")}
+                                <div className="text-2xl font-light text-white mb-1">
+                                    {format(date, "MMM")} <span className="text-neutral-500">{format(date, "yyyy")}</span>
                                 </div>
+                                <div className="text-sm text-neutral-400 font-medium mb-1">
+                                    {Math.round(durations[`m${i + 1}`] / 30)} months
+                                </div>
+                                <div className="text-neutral-500 text-sm">{m.title}</div>
                             </motion.div>
                         </div>
                     );
@@ -253,10 +344,10 @@ function MetroLine({ dates }: { dates: any }) {
 // VARIATION 5: RADIAL FOCUS
 // Circular progress
 // ==========================================
-function RadialFocus({ dates }: { dates: any }) {
+function RadialFocus({ dates, durations }: { dates: any, durations: any }) {
     return (
-        <div className="h-full flex items-center justify-center p-12 bg-[#050505]">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div className="h-full flex items-center justify-center p-8 bg-[#050505] overflow-y-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 {MARHALA_DATA.map((m, i) => {
                     const date = i === 0 ? dates.marhala1 : i === 1 ? dates.marhala2 : dates.marhala3;
                     return (
@@ -286,8 +377,13 @@ function RadialFocus({ dates }: { dates: any }) {
                                 </div>
                             </div>
 
-                            <h3 className="text-2xl font-medium text-white mb-1">{m.title}</h3>
-                            <p className="text-neutral-500 text-sm mb-4">{format(date, "MMMM d, yyyy")}</p>
+                            <div className="text-2xl font-light text-white mb-1 whitespace-nowrap">
+                                {format(date, "MMMM")} <span className="text-neutral-500">{format(date, "yyyy")}</span>
+                            </div>
+                            <div className="text-sm text-neutral-400 font-mono mb-4">
+                                {Math.round(durations[`m${i + 1}`] / 30)} months
+                            </div>
+                            <h3 className="text-xl text-white font-medium mb-1">{m.title}</h3>
                             <p className="text-xs text-neutral-600 max-w-[200px] text-center">{m.desc}</p>
                         </div>
                     );
