@@ -86,9 +86,7 @@ export default function MarhalaVariations({ dates, today }: MarhalaVariationsPro
         { id: "v2", name: "Variation 2: Bento Grid", component: BentoGrid },
         { id: "v3", name: "Variation 3: The Ledger", component: CompactStack },
         { id: "v4", name: "Variation 4: The Journey", component: ZigZagPath },
-        { id: "v5", name: "Variation 5: The Horizon", component: TheHorizon },
         { id: "v6", name: "Variation 6: The Pulse", component: ThePulse },
-        { id: "v7", name: "Variation 7: The Gantt", component: TheGantt },
     ];
 
     const ActiveComponent = variations.find(v => v.id === activeVariation)?.component || VerticalSteps;
@@ -546,91 +544,7 @@ function ZigZagPath({ dates, durations, today }: { dates: any, durations: any, t
     );
 }
 
-// ==========================================
-// VARIATION 5: THE HORIZON
-// Horizontal timeline with vertical pins
-// ==========================================
-function TheHorizon({ dates, today }: { dates: any, durations: any, today: Date }) {
-    const PIXELS_PER_DAY = 3;
-    const startDate = today;
-    const endDate = addDays(dates.marhala3, 60); // Padding
-    const totalDays = differenceInDays(endDate, startDate);
-    const containerWidth = totalDays * PIXELS_PER_DAY;
 
-    const getX = (date: Date) => Math.max(0, differenceInDays(date, startDate)) * PIXELS_PER_DAY;
-
-    return (
-        <div className="h-full w-full overflow-x-auto overflow-y-hidden bg-[#030303] relative custom-scrollbar">
-            <div style={{ width: `${containerWidth}px`, height: '100%' }} className="relative pt-32 pb-12 px-12">
-
-                {/* Time Axis */}
-                <div className="absolute bottom-12 left-0 right-0 h-px bg-neutral-800" />
-
-                {/* Phases */}
-                {MARHALA_DATA.map((m, i) => {
-                    const ps = i === 0 ? today : i === 1 ? dates.marhala1 : dates.marhala2;
-                    const pe = i === 0 ? dates.marhala1 : i === 1 ? dates.marhala2 : dates.marhala3;
-                    const startX = getX(ps);
-                    const width = getX(pe) - startX;
-                    const milestones = generateJuzDates(ps, pe, m.startJuz, m.endJuz);
-
-                    return (
-                        <div key={m.id} className="absolute top-0 bottom-12" style={{ left: startX, width }}>
-                            {/* Phase Block */}
-                            <div className="absolute bottom-4 left-0 right-0 h-16 bg-neutral-900/50 border-t border-b border-neutral-800 flex items-center px-4 overflow-hidden group">
-                                <div className={cn("absolute inset-0 opacity-10 transition-opacity group-hover:opacity-20", m.gradient)} />
-                                <div className="relative z-10 flex items-center gap-3">
-                                    <div className={cn("w-2 h-8 rounded-full", m.color)} />
-                                    <div>
-                                        <div className="text-xs text-neutral-400 font-bold uppercase tracking-widest">{m.title}</div>
-                                        <div className="text-[10px] text-neutral-600">{format(pe, "MMM yyyy")}</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Sub-Milestones / Pins */}
-                            {milestones.map((juz, idx) => {
-                                const jLeft = getX(juz.date) - startX;
-                                const isKey = idx === 0 || idx === milestones.length - 1 || idx % 5 === 4;
-
-                                return (
-                                    <div
-                                        key={juz.juz}
-                                        className="absolute bottom-20 flex flex-col items-center"
-                                        style={{ left: jLeft, transform: 'translateX(-50%)' }}
-                                    >
-                                        <div className={cn("w-px bg-neutral-800 transition-all hover:bg-neutral-600", isKey ? "h-32" : "h-16 group-hover:h-32")} />
-                                        <div className={cn(
-                                            "mt-2 text-[10px] font-mono whitespace-nowrap -rotate-45 origin-bottom-left transition-all",
-                                            isKey ? "text-neutral-400 block" : "text-neutral-700 hidden group-hover:block"
-                                        )}>
-                                            Juz {juz.juz}
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    );
-                })}
-
-                {/* Timeline Ticks (Months) */}
-                {Array.from({ length: Math.ceil(totalDays / 30) }).map((_, i) => {
-                    const d = addDays(startDate, i * 30);
-                    const x = getX(d);
-                    const isYear = d.getMonth() === 0;
-                    return (
-                        <div key={i} className="absolute bottom-0 h-12 flex flex-col justify-end items-center" style={{ left: x }}>
-                            <div className={cn("w-px bg-neutral-800", isYear ? "h-6" : "h-3")} />
-                            <div className={cn("mt-2 text-[10px] font-mono transform -translate-x-1/2 whitespace-nowrap", isYear ? "text-white font-bold" : "text-neutral-600")}>
-                                {isYear ? format(d, "yyyy") : format(d, "MMM")}
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-        </div>
-    );
-}
 
 // ==========================================
 // VARIATION 6: THE PULSE
@@ -816,94 +730,7 @@ function ThePulse({ dates, today }: { dates: any, durations: any, today: Date })
     );
 }
 
-// ==========================================
-// VARIATION 7: THE GANTT
-// Stacked timeline for layout density
-// ==========================================
-function TheGantt({ dates, today }: { dates: any, durations: any, today: Date }) {
-    const PIXELS_PER_DAY = 2.5;
-    const startDate = today;
-    const endDate = addDays(dates.marhala3, 60);
-    const totalDays = differenceInDays(endDate, startDate);
-    const containerWidth = totalDays * PIXELS_PER_DAY;
 
-    const getX = (date: Date) => Math.max(0, differenceInDays(date, startDate)) * PIXELS_PER_DAY;
-
-    return (
-        <div className="h-full w-full overflow-x-auto overflow-y-hidden bg-[#030303] custom-scrollbar flex flex-col justify-center">
-            <div style={{ width: `${containerWidth}px` }} className="relative py-12 px-8">
-
-                {/* Grid Lines */}
-                {Array.from({ length: Math.ceil(totalDays / 90) }).map((_, i) => {
-                    const d = addDays(startDate, i * 90);
-                    const x = getX(d);
-                    return (
-                        <div key={i} className="absolute top-0 bottom-0 w-px bg-neutral-900 border-r border-dashed border-neutral-800/50" style={{ left: x }} />
-                    );
-                })}
-
-                {MARHALA_DATA.map((m, i) => {
-                    const ps = i === 0 ? today : i === 1 ? dates.marhala1 : dates.marhala2;
-                    const pe = i === 0 ? dates.marhala1 : i === 1 ? dates.marhala2 : dates.marhala3;
-                    const startX = getX(ps);
-                    const endX = getX(pe);
-                    const width = endX - startX;
-                    const milestones = generateJuzDates(ps, pe, m.startJuz, m.endJuz);
-
-                    return (
-                        <div
-                            key={m.id}
-                            className="relative h-32 mb-8 last:mb-0"
-                            style={{
-                                marginLeft: startX,
-                                width: Math.max(width, 200) // Min width for visibility
-                            }}
-                        >
-                            {/* Bar */}
-                            <div className="absolute top-10 left-0 right-0 h-1 bg-neutral-800 rounded-full" />
-                            <div className={cn("absolute top-10 left-0 right-0 h-1 rounded-full opacity-30", m.color)} />
-
-                            {/* Info */}
-                            <div className="absolute top-0 left-0 flex items-center gap-3">
-                                <div className={cn("px-2 py-0.5 rounded text-[10px] font-bold uppercase", m.color, "text-black")}>
-                                    {m.arabic}
-                                </div>
-                                <div className="text-white text-lg font-light">{m.title}</div>
-                            </div>
-
-                            {/* Milestones */}
-                            {milestones.map((juz, idx) => {
-                                const relX = getX(juz.date) - startX;
-                                // Stagger visual
-                                const isStaggered = idx % 2 === 0;
-
-                                return (
-                                    <div
-                                        key={juz.juz}
-                                        className="absolute top-10 transform -translate-x-1/2"
-                                        style={{ left: relX }}
-                                    >
-                                        <div className={cn("w-2 h-2 rounded-full border-2 border-[#030303] bg-neutral-500", m.color)} />
-                                        <div className={cn(
-                                            "absolute w-px bg-neutral-800",
-                                            isStaggered ? "h-6 top-2" : "h-10 top-2"
-                                        )} />
-                                        <div className={cn(
-                                            "absolute text-[10px] text-neutral-500 font-mono whitespace-nowrap",
-                                            isStaggered ? "top-9" : "top-14"
-                                        )}>
-                                            J{juz.juz}
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    );
-                })}
-            </div>
-        </div>
-    );
-}
 
 // Add these utility classes to global css if needed, or inline styles
 // .custom-scrollbar: { scrollbar-width: thin; scrollbar-color: #333 #000; }
