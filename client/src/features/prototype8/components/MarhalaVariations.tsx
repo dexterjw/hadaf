@@ -78,6 +78,42 @@ const generateJuzDates = (startDate: Date, endDate: Date, startJuz: number, endJ
     });
 };
 
+// Helper to filter milestones based on available space
+// Returns a subset of milestones that can be displayed without crowding
+const filterVisibleMilestones = (
+    milestones: { juz: number; date: Date }[],
+    phaseWidthPx: number,
+    minPixelsPerMilestone: number = 40
+): { juz: number; date: Date }[] => {
+    const count = milestones.length;
+    if (count === 0) return milestones;
+
+    const pixelsPerMilestone = phaseWidthPx / count;
+
+    // If we have enough space, show all milestones
+    if (pixelsPerMilestone >= minPixelsPerMilestone) {
+        return milestones;
+    }
+
+    // Calculate how many milestones we can show
+    const maxVisible = Math.max(2, Math.floor(phaseWidthPx / minPixelsPerMilestone));
+
+    // If we can only show 2, show first and last
+    if (maxVisible <= 2) {
+        return [milestones[0], milestones[count - 1]];
+    }
+
+    // Show evenly distributed milestones including first and last
+    const step = (count - 1) / (maxVisible - 1);
+    const visible: { juz: number; date: Date }[] = [];
+    for (let i = 0; i < maxVisible; i++) {
+        const index = Math.round(i * step);
+        visible.push(milestones[index]);
+    }
+
+    return visible;
+};
+
 export default function MarhalaVariations({ dates, today }: MarhalaVariationsProps) {
     const [activeVariation, setActiveVariation] = useState<string>("v1");
 
@@ -637,10 +673,13 @@ function ThePulse({ dates, today }: { dates: any, durations: any, today: Date })
                     {MARHALA_DATA.map((m, i) => {
                         const ps = i === 0 ? today : i === 1 ? dates.marhala1 : dates.marhala2;
                         const pe = i === 0 ? dates.marhala1 : i === 1 ? dates.marhala2 : dates.marhala3;
-                        const milestones = generateJuzDates(ps, pe, m.startJuz, m.endJuz);
+                        const allMilestones = generateJuzDates(ps, pe, m.startJuz, m.endJuz);
 
                         const startX = getX(ps);
                         const width = getX(pe) - startX;
+
+                        // Filter milestones based on available space (40px min per milestone)
+                        const milestones = filterVisibleMilestones(allMilestones, width, 40);
 
                         return (
                             <div key={m.id}>
@@ -838,9 +877,12 @@ function TheStream({ dates, today }: { dates: any, durations: any, today: Date }
                     {MARHALA_DATA.map((m, i) => {
                         const ps = i === 0 ? today : i === 1 ? dates.marhala1 : dates.marhala2;
                         const pe = i === 0 ? dates.marhala1 : i === 1 ? dates.marhala2 : dates.marhala3;
-                        const milestones = generateJuzDates(ps, pe, m.startJuz, m.endJuz);
+                        const allMilestones = generateJuzDates(ps, pe, m.startJuz, m.endJuz);
                         const startX = getX(ps);
                         const width = getX(pe) - startX;
+
+                        // Filter milestones based on available space (45px min for larger labels)
+                        const milestones = filterVisibleMilestones(allMilestones, width, 45);
 
                         return (
                             <div key={m.id}>
@@ -987,7 +1029,12 @@ function TheHorizon({ dates, today }: { dates: any, durations: any, today: Date 
                     {MARHALA_DATA.map((m, i) => {
                         const ps = i === 0 ? today : i === 1 ? dates.marhala1 : dates.marhala2;
                         const pe = i === 0 ? dates.marhala1 : i === 1 ? dates.marhala2 : dates.marhala3;
-                        const milestones = generateJuzDates(ps, pe, m.startJuz, m.endJuz);
+                        const allMilestones = generateJuzDates(ps, pe, m.startJuz, m.endJuz);
+                        const startX = getX(ps);
+                        const width = getX(pe) - startX;
+
+                        // Filter milestones based on available space (35px min due to staggered heights)
+                        const milestones = filterVisibleMilestones(allMilestones, width, 35);
 
                         return (
                             <div key={m.id}>
