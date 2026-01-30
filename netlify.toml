@@ -1,6 +1,6 @@
 [build]
   # Build client with Vite (no server bundling needed)
-  # Note: Express backend in /server is excluded via .netlifyignore
+  # Note: Hono backend in /server is excluded via .netlifyignore
   command = "npm install && npm run build"
   
   # Directory where static files are published after build
