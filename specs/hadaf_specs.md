@@ -8,14 +8,15 @@
 
 ## **2\. Journey Milestones (Marhala)**
 
-The entire memorization journey is structured around three key milestones, each called a **Marhala**:
+The entire memorization journey is structured around three key milestones, each called a **Stage**:
 
-* **Marhala 1 - The Foundation:** Juz 1 to 5  
+* **Stage 1 - The Foundation:** Juz 1 to 5  
   * Focus on building the foundation of memorization techniques and habits.
-* **Marhala 2 - The Momentum:** Juz 6 to 20  
+* **Stage 2 - The Momentum:** Juz 6 to 15  
   * Building consistent momentum and increased capacity.
-* **Marhala 3 - The Mastery:** Juz 21 to 30 + 6 months revision  
-  * Achieving mastery, completing the final stretch, and conducting comprehensive revision of the entire Quran (Duhur).
+* **Stage 3 - The Mastery:** Juz 16 to 30 
+  * Achieving mastery, completing the final stretch.
+* **Daur:** Revision of the entire Quran. Tentative timeline for revision is 6 months.
 
 ## **3\. Core User Flow**
 
