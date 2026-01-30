@@ -44,8 +44,8 @@ app.use("*", async (c, next) => {
   });
 
   // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  const port = parseInt(process.env.PORT || "5000", 10);
+  // Other ports are firewalled. Default to 3000 if not specified.
+  const port = parseInt(process.env.PORT || "3000", 10);
 
   // Setup static files and Vite in development
   if (process.env.NODE_ENV === "production") {
