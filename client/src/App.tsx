@@ -37,10 +37,10 @@ function Router() {
       {/* Prototype 2 with Dashboard system */}
       <Route path="/labs/p2/:tab?" component={Prototype2Page} />
 
-      {/* Redirect root to labs/p1 */}
+      {/* Redirect root to labs */}
       <Route path="/">
         {() => {
-          window.location.replace("/labs/p1");
+          window.location.replace("/labs/");
           return null;
         }}
       </Route>
