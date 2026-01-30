@@ -1,18 +1,15 @@
-import type { Express } from "express";
-import { createServer, type Server } from "http";
+import type { Hono } from "hono";
 import { storage } from "./storage";
 
-export async function registerRoutes(
-  httpServer: Server,
-  app: Express
-): Promise<Server> {
+export async function registerRoutes(app: Hono): Promise<Hono> {
   // AI Chat endpoint for Hifz Companion
-  app.post('/api/chat', async (req, res) => {
+  app.post('/api/chat', async (c) => {
     try {
-      const { message } = req.body;
+      const body = await c.req.json();
+      const { message } = body;
 
       if (!message) {
-        return res.status(400).json({ error: 'Message is required' });
+        return c.json({ error: 'Message is required' }, 400);
       }
 
       // Placeholder response - integrate with Gemini API when API key is available
@@ -27,10 +24,10 @@ export async function registerRoutes(
 
       const reply = responses[Math.floor(Math.random() * responses.length)];
 
-      res.json({ reply });
+      return c.json({ reply });
     } catch (error) {
       console.error('Chat API error:', error);
-      res.status(500).json({ error: 'Failed to process chat message' });
+      return c.json({ error: 'Failed to process chat message' }, 500);
     }
   });
 
@@ -40,6 +37,5 @@ export async function registerRoutes(
   // use storage to perform CRUD operations on the storage interface
   // e.g. storage.insertUser(user) or storage.getUserByUsername(username)
 
-  return httpServer;
+  return app;
 }
-
